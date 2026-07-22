@@ -1,0 +1,132 @@
+.faq-page-wrapper {
+    background: #f8fafc;
+    min-height: 100vh;
+}
+
+.faq-hero {
+    background: linear-gradient(135deg, #001534 0%, #002255 100%);
+    padding: 100px 20px;
+    text-align: center;
+    color: white;
+}
+
+.faq-hero-content h1 {
+    font-size: 42px;
+    font-weight: 800;
+    margin-bottom: 10px;
+    letter-spacing: -0.5px;
+}
+
+.faq-hero-content p {
+    font-size: 18px;
+    opacity: 0.9;
+    margin-bottom: 25px;
+}
+
+.faq-content-container {
+    max-width: 800px;
+    margin: -50px auto 100px;
+    padding: 0 20px;
+}
+
+.faq-list-card {
+    background: white;
+    padding: 20px;
+    border-radius: 24px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+}
+
+.faq-item {
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.faq-item:last-child {
+    border-bottom: none;
+}
+
+.faq-question {
+    width: 100%;
+    padding: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.3s ease;
+}
+
+.faq-question span {
+    font-size: 18px;
+    font-weight: 700;
+    color: #001534;
+}
+
+.faq-icon {
+    font-size: 24px;
+    color: #FF0075;
+    transition: transform 0.3s ease;
+}
+
+.faq-item.open .faq-icon {
+    transform: rotate(180deg);
+}
+
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out, padding 0.3s ease;
+}
+
+.faq-item.open .faq-answer {
+    max-height: 500px;
+}
+
+.faq-answer p {
+    padding: 0 24px 24px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #475569;
+}
+
+.cta-support {
+    margin-top: 60px;
+    text-align: center;
+    background: white;
+    padding: 40px;
+    border-radius: 24px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
+}
+
+.cta-support h3 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.cta-support p {
+    color: #64748b;
+    margin-bottom: 30px;
+}
+
+.support-wa-btn {
+    display: inline-block;
+    background: #25D366; /* WhatsApp green */
+    color: white;
+    padding: 14px 28px;
+    border-radius: 30px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: transform 0.3s ease;
+}
+
+.support-wa-btn:hover {
+    transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+    .faq-hero-content h1 {
+        font-size: 32px;
+    }
+}

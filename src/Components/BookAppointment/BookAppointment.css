@@ -1,0 +1,131 @@
+.book{
+    width: 100%;
+    height: 500px; /* Fixed height as requested */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* padding: 20px 60px; */
+    color: white;
+    background-color: #002366; /* Deep Blue base */
+    gap: 50px;
+    overflow: hidden; /* Ensure content stays within fixed height */
+}
+.bookleft{
+   display: flex;
+   width: 50%; /* Fixed width for text side */
+   height: 100%;
+   align-items: flex-start;
+   justify-content: center;
+   flex-direction: column;
+   gap: 20px;
+    padding: 20px 60px;
+}
+.bookleft h1{
+    font-size: 32px;
+    font-weight: 700;
+}
+.bookleft p{
+    font-family: 16px;
+    font-weight:500;
+    line-height: 25px;
+}
+.bookleft button{
+    padding: 13px 50px;
+    background-color: #FF0075; /* Pink button */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 700;
+    margin-top: 20px;
+}
+.bookright{
+    width: 50%; /* Remaining width */
+    height: 100%;
+    display: flex;
+    /* background-color: red; Remove debug color */
+    position: relative; /* For absolute positioning if needed, valid for flex child too */
+}
+.bookright img{
+    width: 100%;
+    height: 100%; /* Force image to take full height of container */
+    object-fit: cover; /* Maintain aspect ratio, crop if needed */
+}
+
+@media (max-width: 768px) {
+    .book {
+        height: 480px;
+        position: relative;
+        background-image: url('../../assets/sliderimg.png');
+        background-size: cover;
+        background-position: center;
+        padding: 0;
+        display: block;
+    }
+
+    /* Add overlay directly via before pseudo-element on .book */
+    .book::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, #002366 30%, rgba(0, 35, 102, 0.3) 100%);
+        z-index: 1;
+    }
+
+    .bookleft {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        z-index: 2;
+        padding: 0 10%;
+        align-items: flex-start;
+        text-align: left;
+        justify-content: center;
+        order: unset;
+    }
+
+    .bookright {
+        display: none; /* Hide the separate image container on mobile */
+    }
+    
+    .bookleft h1 {
+        font-size: 36px;
+        font-weight: 800;
+        line-height: 1.1;
+        max-width: 280px;
+        margin-bottom: 20px;
+    }
+    
+    .bookleft div p {
+        font-size: 16px;
+        color: rgba(255, 255, 255, 0.9);
+        line-height: 1.5;
+        margin-bottom: 30px;
+        max-width: 320px;
+        text-align: left;
+    }
+    
+    .bookleft button {
+        width: auto;
+        padding: 14px 28px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 700;
+        margin-top: 0;
+        transition: transform 0.3s ease;
+    }
+
+    .bookleft button:active {
+        transform: scale(0.98);
+    }
+}
+
+/* Animation for Image Slider */
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.fade-in {
+    animation: fadeIn 1s ease-in-out;
+}

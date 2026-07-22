@@ -1,0 +1,244 @@
+.docs-layout-container {
+    background: #ffffff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    color: #1a1a1a;
+    font-family: 'Inter', -apple-system, system-ui, sans-serif;
+}
+
+.legal-docs-main {
+    display: flex;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 80px 40px;
+    gap: 40px;
+    flex: 1;
+    width: 100%;
+}
+
+/* --- Left Sidebar (Global Nav) --- */
+.docs-sidebar-nav {
+    width: 260px;
+    flex-shrink: 0;
+}
+
+.nav-group-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #94a3b8;
+    margin-bottom: 20px;
+    padding-left: 12px;
+}
+
+.docs-nav-link {
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-bottom: 4px;
+}
+
+.docs-nav-link:hover {
+    background: #f1f5f9;
+    color: #001534;
+}
+
+.docs-nav-link.active {
+    background: #f1f7ff;
+    color: #0066ff;
+    font-weight: 600;
+}
+
+/* --- Center Content Flow --- */
+.docs-content-flow {
+    flex: 1;
+    max-width: 800px;
+    padding: 0 40px;
+    border-left: 1px solid #f1f5f9;
+    border-right: 1px solid #f1f5f9;
+}
+
+.docs-breadcrumbs {
+    font-size: 14px;
+    color: #94a3b8;
+    margin-bottom: 12px;
+}
+
+.docs-article-header {
+    margin-bottom: 60px;
+}
+
+.docs-article-header h1 {
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: 800;
+    color: #001534;
+    letter-spacing: -0.03em;
+    margin-bottom: 12px;
+}
+
+.docs-last-updated {
+    font-size: 14px;
+    color: #94a3b8;
+}
+
+.docs-article-body {
+    padding-bottom: 100px;
+}
+
+.legal-doc-section {
+    margin: 0 0 15px 0 !important; /* Extremely tight bottom margin */
+    padding: 0 !important;
+    scroll-margin-top: 100px;
+}
+
+.legal-doc-section h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #001534;
+    margin: 0 0 8px 0 !important; /* Just a tiny gap below title */
+    letter-spacing: -0.01em;
+}
+
+.legal-doc-section p {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #334155;
+    margin: 0 0 10px 0 !important; /* Minimal gap below text */
+}
+
+.docs-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 10px 0 !important;
+}
+
+.docs-list li {
+    position: relative;
+    padding-left: 28px;
+    margin: 0 0 6px 0 !important;
+    font-size: 16px;
+    line-height: 1.4;
+    color: #475569;
+}
+
+.docs-list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 12px;
+    width: 6px;
+    height: 6px;
+    background: #0066ff;
+    border-radius: 50%;
+}
+
+/* --- Right Sidebar (TOC) --- */
+.docs-toc-sidebar {
+    width: 240px;
+    flex-shrink: 0;
+}
+
+.toc-sticky {
+    position: sticky;
+    top: 100px;
+}
+
+.toc-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #94a3b8;
+    margin-bottom: 20px;
+}
+
+.toc-link {
+    display: block;
+    font-size: 14px;
+    color: #64748b;
+    text-decoration: none;
+    padding: 8px 0;
+    border-left: 2px solid transparent;
+    padding-left: 16px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.toc-link:hover {
+    color: #001534;
+}
+
+.toc-link.active {
+    color: #0066ff;
+    border-left-color: #0066ff;
+    font-weight: 600;
+}
+
+/* --- Mobile Navigation --- */
+.mobile-policy-toggle {
+    display: none;
+    position: sticky;
+    top: 0;
+    background: #ffffff;
+    padding: 15px 20px;
+    border-bottom: 1px solid #f1f5f9;
+    z-index: 100;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+    color: #0066ff;
+    cursor: pointer;
+}
+
+@media (max-width: 1100px) {
+    .docs-toc-sidebar {
+        display: none;
+    }
+    
+    .docs-content-flow {
+        border-right: none;
+    }
+}
+
+@media (max-width: 850px) {
+    .docs-sidebar-nav {
+        display: none;
+    }
+    
+    .legal-docs-main {
+        padding: 40px 20px;
+    }
+    
+    .docs-content-flow {
+        padding: 0;
+        border-left: none;
+    }
+    
+    .mobile-policy-toggle {
+        display: flex;
+    }
+    
+    .show-nav .docs-sidebar-nav {
+        display: block;
+        position: fixed;
+        top: 55px;
+        left: 0;
+        width: 100%;
+        height: calc(100vh - 55px);
+        background: #ffffff;
+        z-index: 1000;
+        padding: 40px 20px;
+    }
+    
+    .docs-article-header h1 {
+        font-size: 32px;
+    }
+}

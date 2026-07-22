@@ -1,0 +1,70 @@
+.trendy{
+    width: 100%;
+    padding:20px 60px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 30px;
+}
+.trendymain{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 40px 0px;
+}
+.trendymaintitle{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0px 60px;
+}
+.trendymaintitle h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.shop-now-link {
+    font-size: 15px;
+    font-weight: 700;
+    border-bottom: 1px solid black;
+    padding-bottom: 2px;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    color: var(--primary-color);
+}
+
+.shop-now-link:hover {
+    color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+@media (max-width: 768px) {
+    .trendy {
+        grid-template-columns: repeat(2, 1fr); /* 2 columns */
+        padding: 20px 15px;
+        gap: 20px; /* Increased from 15px */
+    }
+
+    .trendymain {
+        display: block; /* Restore visibility */
+        padding: 40px 0;
+    }
+
+    .trendymaintitle {
+        padding: 0 15px; /* Reduced from 20px */
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .trendymaintitle h2 {
+        font-size: 15px; /* Scaled down */
+        max-width: 70%;
+        line-height: 1.2;
+    }
+
+    .shop-now-link {
+        font-size: 13px; /* Scaled down */
+    }
+}

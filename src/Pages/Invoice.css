@@ -1,0 +1,455 @@
+/* Corporate Invoice Styling - Strict GST Standard */
+
+.corporate-invoice-container {
+    background: radial-gradient(circle at top left, #4a4e51, #2b2d2f); /* Premium deep gradient */
+    min-height: 100vh;
+    padding: 60px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    transition: all 0.3s ease;
+}
+
+/* Control Bar (Hidden on Print) */
+.invoice-controls {
+    width: 210mm;
+    max-width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.back-link {
+    color: white;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.print-btn-corporate {
+    background: #002366;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* The Paper Sheet */
+.invoice-document.paper {
+    background: white;
+    width: 210mm; /* A4 Width */
+    max-width: 100%;
+    box-sizing: border-box;
+    min-height: 297mm; /* A4 Height */
+    padding: 40px;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.5); /* Deep premium shadow */
+    color: #000;
+    line-height: 1.4;
+    transition: width 0.3s ease;
+}
+
+.doc-section {
+    border: 1px solid #000;
+    margin-top: -1px; /* Collapse borders */
+}
+
+.border-top { border-top: 1px solid #000; }
+.border-left { border-left: 1px solid #000; }
+
+/* Header Section */
+.header-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 10px 20px;
+}
+
+.doc-logo {
+    height: 55px;
+    object-fit: contain;
+}
+
+.type-cell h1 {
+    font-size: 24px;
+    font-weight: 800;
+    margin: 0;
+    text-align: right;
+    color: #002366;
+}
+
+/* Address Grid */
+.address-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+}
+
+.grid-cell {
+    padding: 10px 15px;
+}
+
+.cell-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #002366;
+    margin-bottom: 8px;
+}
+
+.cell-content p {
+    margin: 2px 0;
+    font-size: 13px;
+}
+
+.org-name {
+    font-size: 16px;
+    font-weight: 800;
+    color: #002366;
+}
+
+.cell-content span {
+    font-weight: 700;
+    width: 90px;
+    display: inline-block;
+}
+
+/* Table Design */
+.corporate-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.corporate-table th, .corporate-table td {
+    border: 1px solid #000;
+    padding: 8px;
+    font-size: 12px;
+}
+
+.corporate-table th {
+    background-color: #f2f2f2;
+    font-weight: 700;
+    color: #002366;
+}
+
+.item-name-bold {
+    font-weight: 700;
+    margin: 0;
+}
+
+.item-sub-desc {
+    font-size: 10px;
+    color: #555;
+    margin: 2px 0 0 0;
+}
+
+.bold-label {
+    font-weight: 700;
+    background-color: #f2f2f2;
+}
+
+/* Words Section */
+.words-section {
+    padding: 10px 15px;
+}
+
+.words-section p {
+    margin: 0;
+    font-size: 12px;
+}
+
+.words-section span {
+    font-size: 10px;
+    color: #444;
+}
+
+/* Tax Summary Table */
+.tax-summary-table {
+    border-top: none;
+}
+
+/* Footer Section */
+.footer-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    min-height: 120px;
+}
+
+.terms-list {
+    font-size: 10px;
+    padding-left: 20px;
+    margin: 5px 0;
+}
+
+.tiny-title {
+    font-size: 10px;
+    font-weight: 700;
+    text-decoration: underline;
+    margin-bottom: 5px;
+}
+
+.payment-note {
+    font-size: 11px;
+    margin-top: 15px;
+}
+
+.payment-note span {
+    font-weight: 700;
+    color: #002366;
+}
+
+.auth-cell {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 10px 15px;
+}
+
+.sign-for {
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.sign-label {
+    font-size: 12px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.bottom-tag {
+    text-align: center;
+    border: none;
+    padding-top: 10px;
+}
+
+.bottom-tag p {
+    font-size: 10px;
+    color: #666;
+}
+
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+
+/* Print Mode Overrides */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    .corporate-invoice-container {
+        background: none;
+        padding: 0;
+    }
+    .invoice-document.paper {
+        box-shadow: none;
+        width: 100%;
+        margin: 0;
+    }
+    .corporate-table th {
+        background-color: #f2f2f2 !important;
+        -webkit-print-color-adjust: exact;
+    }
+    .bold-label {
+        background-color: #f2f2f2 !important;
+        -webkit-print-color-adjust: exact;
+    }
+}
+
+/* Ultra-Responsive Mobile View - Premium Optimization */
+@media (max-width: 768px) {
+    .corporate-invoice-container {
+        padding: 20px 10px;
+    }
+
+    .invoice-controls {
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+        width: 100%;
+        margin-bottom: 25px;
+    }
+
+    .sync-status-indicator {
+        justify-content: center;
+        background: rgba(255,255,255,0.05);
+        padding: 8px;
+        border-radius: 8px;
+    }
+
+    .back-link, .print-btn-corporate {
+        text-align: center;
+        width: 100%;
+        padding: 12px;
+        font-size: 15px;
+    }
+
+    .invoice-document.paper {
+        padding: 15px 12px;
+        min-height: auto;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .header-grid {
+        grid-template-columns: 1fr;
+        padding: 15px 0;
+        text-align: center;
+        gap: 15px;
+    }
+
+    .doc-logo {
+        height: 40px; /* Scaled down for mobile */
+        max-width: 100%;
+        margin: 0 auto;
+    }
+
+    .type-cell h1 {
+        text-align: center;
+        font-size: 22px;
+        letter-spacing: 2px;
+        margin: 0;
+    }
+
+    .address-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-grid {
+        grid-template-columns: 1fr;
+        min-height: auto;
+    }
+
+    .border-left {
+        border-left: none;
+        border-top: 1px solid #000;
+    }
+
+    .grid-cell {
+        padding: 12px 0;
+    }
+
+    .cell-label {
+        font-size: 10px;
+        margin-bottom: 4px;
+    }
+
+    .cell-content p {
+        font-size: 12px;
+    }
+
+    .cell-content span {
+        width: 75px;
+        font-size: 11px;
+    }
+
+    .table-section {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin: 10px 0; /* Vertical spacing instead of negative horizontal margin */
+        padding-bottom: 5px;
+        border: 1px solid #000;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .corporate-table {
+        min-width: 480px;
+        table-layout: fixed;
+        border-collapse: collapse;
+        border: none; /* Let the container handle the outer border */
+    }
+
+    .corporate-table th, .corporate-table td {
+        padding: 5px 3px;
+        font-size: 9px; /* Even more compact for better fit */
+        word-break: break-word; /* Ensure long words don't break layout */
+    }
+
+    /* Column Specific Widths for Mobile */
+    .corporate-table th:nth-child(1), .corporate-table td:nth-child(1) { width: 25px; } /* Sl. */
+    .corporate-table th:nth-child(2), .corporate-table td:nth-child(2) { width: 140px; text-align: left; } /* Description - Prioritized */
+    .corporate-table th:nth-child(3), .corporate-table td:nth-child(3) { width: 40px; } /* HSN */
+    .corporate-table th:nth-child(4), .corporate-table td:nth-child(4) { width: 35px; } /* Qty */
+    .corporate-table th:nth-child(5), .corporate-table td:nth-child(5) { width: 60px; } /* Rate */
+    .corporate-table th:nth-child(6), .corporate-table td:nth-child(6) { width: 45px; } /* GST Rate */
+    .corporate-table th:nth-child(7), .corporate-table td:nth-child(7) { width: 60px; } /* Tax Amt. */
+    .corporate-table th:nth-child(8), .corporate-table td:nth-child(8) { width: 75px; } /* Total */
+
+    .item-name-bold {
+        font-size: 10px;
+        line-height: 1.2;
+    }
+
+    .item-sub-desc {
+        font-size: 8.5px;
+    }
+
+    .auth-cell {
+        text-align: center;
+        padding: 60px 0 20px 0;
+        min-height: 140px;
+        justify-content: flex-end;
+    }
+
+    .sign-for {
+        text-align: center;
+        font-size: 11px;
+    }
+
+    .sign-label {
+        margin-top: auto;
+    }
+
+    .words-section {
+        padding: 15px 0;
+    }
+
+    .words-section p {
+        font-size: 10px;
+        line-height: 1.5;
+    }
+    
+    .bottom-tag {
+        padding: 15px 5px;
+    }
+}
+
+/* Sync Status Indicators */
+.sync-status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.syncing-text {
+    color: #ffd700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.synced-text {
+    color: #4ade80;
+    font-weight: 700;
+}
+
+.spin {
+    animation: fa-spin 2s infinite linear;
+}
+
+@keyframes fa-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(359deg); }
+}
+
+/* Standard UI spacing */
+.spacer-large {
+    flex-grow: 1;
+}

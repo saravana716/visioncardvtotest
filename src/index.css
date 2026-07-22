@@ -1,0 +1,158 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+/* Force-bundling problematic page styles for production reliability */
+@import './Pages/About.css';
+@import './Pages/Blogs.css';
+@import './Pages/ContactPage.css';
+@import './Pages/ProductDetails.css';
+@import './Pages/ProductPage.css';
+@import './Pages/Cart.css';
+@import './Pages/Checkout.css';
+@import './Pages/Profile.css';
+@import './Pages/Orders.css';
+@import './Pages/Wishlist.css';
+@import './Pages/OrderDetail.css';
+@import './Pages/OrderSuccess.css';
+@import './Pages/OrderFailed.css';
+@import './Pages/HomeTryOn.css';
+@import './Pages/VirtualTryOn.css';
+@import './Pages/BookSlot.css';
+@import './Pages/Invoice.css';
+@import './Pages/NotFound.css';
+@import './Pages/FAQ/FAQ.css';
+@import './Pages/Legal/LegalPage.css';
+@import './Pages/ComingSoon.css';
+*{
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent; /* Remove mobile tap highlight */
+}
+
+/* Remove default focus outline/line on click */
+*:focus {
+    outline: none !important;
+}
+
+body {
+    caret-color: transparent; /* Hide text caret on click for non-input elements */
+}
+
+input, textarea, [contenteditable="true"] {
+    caret-color: auto; /* Show caret only where needed */
+}
+
+/* Global Scroll Lock - Target everything pervasive */
+html.no-scroll,
+body.no-scroll,
+.App.no-scroll {
+    overflow: hidden !important;
+    height: 100dvh !important;
+    width: 100vw !important;
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    -webkit-overflow-scrolling: none !important;
+}
+
+/* Re-enable scrolling for inner containers */
+.drawer-body,
+.lens-modal,
+.mobile-sidebar {
+    overflow-y: auto !important;
+    touch-action: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    pointer-events: auto !important;
+}
+
+:root {
+  --primary-color: #002366;
+  --secondary-color: #FF0075;
+  --accent-soft: rgba(255, 0, 117, 0.05);
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.3);
+  --category-theme: var(--primary-color);
+  --text-main: #1a1a1a;
+  --text-muted: #666666;
+  --shadow-premium: 0 10px 30px rgba(0, 35, 102, 0.08);
+  --transition-smooth: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+
+  /* Improved Fluid Typography - Responsive across all scales */
+  --fs-xs: clamp(0.7rem, 0.6rem + 0.3vw, 0.85rem);
+  --fs-sm: clamp(0.8rem, 0.7rem + 0.4vw, 0.95rem);
+  --fs-base: clamp(0.9rem, 0.8rem + 0.3vw, 1.125rem);
+  --fs-md: clamp(1.1rem, 0.9rem + 0.5vw, 1.25rem);
+  --fs-lg: clamp(1.25rem, 1rem + 0.8vw, 1.6rem);
+  --fs-xl: clamp(1.5rem, 1.2rem + 1.2vw, 2.2rem);
+  --fs-2xl: clamp(2rem, 1.5rem + 2vw, 3.5rem);
+  --fs-3xl: clamp(2.5rem, 2rem + 3vw, 5rem);
+
+  /* Fluid Spacing - Proportional to viewport */
+  --spacing-xs: clamp(0.25rem, 0.2rem + 0.2vw, 0.5rem);
+  --spacing-sm: clamp(0.5rem, 0.4rem + 0.4vw, 1rem);
+  --spacing-md: clamp(1rem, 0.8rem + 1vw, 2rem);
+  --spacing-lg: clamp(1.5rem, 1.2rem + 2vw, 4rem);
+  --spacing-xl: clamp(3rem, 2rem + 4vw, 8rem);
+}
+
+body {
+    width: 100%;
+    min-height: 100vh;
+    overflow-x: hidden;
+    font-family: 'Outfit', sans-serif;
+    color: var(--text-main);
+    background-color: #ffffff;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: var(--fs-base);
+    line-height: 1.6;
+}
+
+/* Fluid Container */
+.container-fluid {
+    width: 100%;
+    max-width: 1920px; /* Standard 4K/Large screen width */
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.5s;
+}
+
+/* Global Animations */
+@keyframes revealUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes revealIn {
+    from { opacity: 0; scale: 0.95; }
+    to { opacity: 1; scale: 1; }
+}
+
+.reveal-up {
+    animation: revealUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.reveal-in {
+    animation: revealIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* Scroll Animation Target */
+.scroll-reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s ease-out;
+}
+
+.scroll-reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }

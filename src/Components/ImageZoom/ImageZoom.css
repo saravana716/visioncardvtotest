@@ -1,0 +1,65 @@
+.zoom-container {
+    position: relative;
+    width: 100%;
+    height: calc(100% - 55px); /* leave room for 360 button */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: zoom-in;
+    overflow: hidden; /* Critical for inner zoom */
+    border-radius: 12px 12px 0 0;
+    background: #f9f9f9;
+}
+
+.base-image {
+    max-width: 100%;
+    max-height: 450px;
+    object-fit: contain;
+    transition: transform 0.3s ease-out;
+    pointer-events: none;
+}
+
+.base-image.zoomed {
+    cursor: zoom-out;
+}
+
+.zoom-hint {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 5px 13px;
+    border-radius: 30px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    pointer-events: none;
+    opacity: 0.7;
+    backdrop-filter: blur(4px);
+    transition: opacity 0.3s ease;
+}
+
+.zoom-container:hover .zoom-hint {
+    opacity: 0;
+}
+
+.zoom-container.is-zoomed {
+    touch-action: none; /* Prevents scrolling while panning image on mobile */
+}
+
+@media (max-width: 1024px) {
+    .zoom-container {
+        cursor: default;
+        height: auto;
+        aspect-ratio: 1/1;
+    }
+    .zoom-hint {
+        opacity: 0.9;
+    }
+    .base-image {
+        max-height: 80vh;
+    }
+}

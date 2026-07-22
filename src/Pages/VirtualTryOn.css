@@ -1,0 +1,302 @@
+.virtual-tryon-page {
+    background: #fcfcfc;
+    min-height: 100vh;
+}
+
+.tryon-hero-premium {
+    padding: 100px 5% 60px;
+    background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+}
+
+.tryon-container-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 60px;
+    align-items: center;
+}
+
+.tryon-visual-section {
+    position: relative;
+    width: 100%;
+}
+
+.tryon-placeholder-card {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+    aspect-ratio: 16/9;
+}
+
+.model-base {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.overlay-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0,0,0,0.2);
+}
+
+.pulse-button {
+    background: #00387D;
+    color: #fff;
+    padding: 20px 40px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 0 0 rgba(0, 56, 125, 0.4);
+    animation: pulse-ar 2s infinite;
+}
+
+@keyframes pulse-ar {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 56, 125, 0.4); }
+    70% { transform: scale(1.05); box-shadow: 0 0 0 20px rgba(0, 56, 125, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 56, 125, 0); }
+}
+
+.vto-active-container {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+    aspect-ratio: 16/9;
+    background: #000; /* Dark background while camera loads */
+}
+
+.vto-badge-live {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 8px 15px;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: #ff4d4d;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 10;
+}
+
+.vto-badge-live .dot {
+    width: 8px;
+    height: 8px;
+    background: #ff4d4d;
+    border-radius: 50%;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+.tryon-info-section h1 {
+    font-size: 3.5rem;
+    margin: 15px 0;
+    color: #111;
+    font-family: 'Jost', sans-serif;
+}
+
+.premium-label {
+    color: #00387D;
+    font-weight: 800;
+    letter-spacing: 2px;
+    font-size: 0.9rem;
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+.selected-product-vto {
+    background: #fff;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    margin-bottom: 30px;
+}
+
+.vto-product-meta .brand {
+    font-size: 0.9rem;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.vto-product-meta h3 {
+    font-size: 1.8rem;
+    margin: 5px 0 10px;
+    color: #333;
+}
+
+.vto-product-meta .price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #00387D;
+}
+
+.vto-action-btns {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.vto-btn-primary {
+    flex: 1;
+    padding: 15px;
+    border-radius: 12px;
+    border: none;
+    background: #00387D;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.vto-btn-outline {
+    flex: 1;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    background: transparent;
+    color: #333;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+
+.vto-btn-outline:hover {
+    background: #f5f5f5;
+}
+
+.vto-features-grid {
+    display: flex;
+    gap: 30px;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #555;
+    font-weight: 500;
+}
+
+.feature-item svg {
+    font-size: 1.5rem;
+    color: #00387D;
+}
+
+.try-spectacles-section-v2 {
+    padding: 80px 5%;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.section-header h2 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.vto-products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.vto-product-card {
+    background: #fff;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    position: relative;
+}
+
+.vto-product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+.vto-product-card.active {
+    border-color: #00387D;
+    background: #f8fbff;
+}
+
+.card-img {
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.card-img img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.card-info h4 {
+    font-size: 1rem;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.card-info p {
+    font-weight: 700;
+    color: #00387D;
+}
+
+.active-tag {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #00387D;
+    color: #fff;
+    font-size: 0.6rem;
+    padding: 4px 8px;
+    border-radius: 10px;
+    text-transform: uppercase;
+}
+
+@media (max-width: 992px) {
+    .tryon-container-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .tryon-info-section h1 {
+        font-size: 2.5rem;
+    }
+}

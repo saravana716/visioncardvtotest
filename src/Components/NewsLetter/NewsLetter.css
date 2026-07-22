@@ -1,0 +1,129 @@
+.newsletter-section {
+    background: #001529;
+    padding: 80px 20px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+}
+
+.newsletter-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(255,0,117,0.1) 0%, transparent 70%);
+    z-index: 1;
+}
+
+.newsletter-container {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+}
+
+.newsletter-content h2 {
+    font-size: 36px;
+    font-weight: 800;
+    margin-bottom: 15px;
+    letter-spacing: -1px;
+}
+
+.newsletter-content p {
+    font-size: 18px;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 40px;
+    max-width: 600px;
+}
+
+.newsletter-form {
+    width: 100%;
+    max-width: 550px;
+}
+
+.input-group {
+    display: flex;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 6px;
+    border-radius: 100px;
+    transition: all 0.3s;
+}
+
+.input-group:focus-within {
+    border-color: rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.1);
+    box-shadow: 0 0 30px rgba(0,0,0,0.2);
+}
+
+.input-group input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 15px 25px;
+    color: #fff;
+    font-size: 15px;
+    outline: none;
+}
+
+.input-group input::placeholder {
+    color: rgba(255,255,255,0.4);
+}
+
+.input-group button {
+    background: #FF0075;
+    color: #fff;
+    border: none;
+    padding: 0 35px;
+    border-radius: 100px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.input-group button:hover {
+    background: #ff1a8c;
+    transform: scale(1.02);
+}
+
+.input-group button:disabled {
+    background: #555;
+    cursor: not-allowed;
+}
+
+.privacy-note {
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+    margin-top: 20px;
+    letter-spacing: 0.5px;
+}
+
+@media (max-width: 600px) {
+    .newsletter-content h2 {
+        font-size: 28px;
+    }
+    .newsletter-content p {
+        font-size: 15px;
+    }
+    .input-group {
+        flex-direction: column;
+        background: transparent;
+        border: none;
+        padding: 0;
+        gap: 15px;
+    }
+    .input-group input {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 100px;
+    }
+    .input-group button {
+        padding: 18px;
+    }
+}

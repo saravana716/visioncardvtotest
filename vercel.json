@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/payment-response",
+      "destination": "https://visioncardbackend.onrender.com/payment-response"
+    },
+    {
+      "source": "/payment-cancel",
+      "destination": "https://visioncardbackend.onrender.com/payment-cancel"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

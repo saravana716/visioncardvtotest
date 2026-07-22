@@ -1,0 +1,252 @@
+.search-overlay-v2 {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 5000;
+    display: flex;
+    justify-content: center;
+    padding-top: 50px;
+}
+
+.search-container-v2 {
+    width: 90%;
+    max-width: 800px;
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 40px 100px rgba(0, 15, 45, 0.2);
+    z-index: 5001;
+    overflow: hidden;
+    height: fit-content;
+    max-height: 80vh;
+}
+
+.search-header-v2 {
+    display: flex;
+    align-items: center;
+    padding: 25px 35px;
+    border-bottom: 1.5px solid #f1f3f5;
+    gap: 20px;
+}
+
+.search-input-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.search-icon-v2 {
+    font-size: 24px;
+    color: #cbd5e0;
+}
+
+.search-input-wrapper input {
+    width: 100%;
+    border: none;
+    font-size: 20px;
+    font-weight: 500;
+    color: #1a1a1a;
+    outline: none;
+}
+
+.search-input-wrapper input::placeholder {
+    color: #a0aec0;
+}
+
+.close-search-btn {
+    background: #f8fafc;
+    border: none;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #4a5568;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.close-search-btn:hover {
+    background: #edf2f7;
+    transform: rotate(90deg);
+}
+
+.search-body-v2 {
+    padding: 30px 40px;
+    overflow-y: auto;
+    max-height: calc(80vh - 100px);
+}
+
+.results-title {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #a0aec0;
+    margin-bottom: 20px;
+}
+
+.search-result-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    margin: 0 -10px 10px;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    gap: 20px;
+}
+
+.search-result-item:hover {
+    background: #f8fbff;
+}
+
+.result-img {
+    width: 80px;
+    height: 60px;
+    background: #f8fafc;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+}
+
+.result-img img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.result-info {
+    flex: 1;
+}
+
+.res-brand {
+    font-size: 12px;
+    color: var(--primary-color);
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+}
+
+.res-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.res-price {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+.res-arrow {
+    color: #edf2f7;
+    font-size: 18px;
+    transition: all 0.3s;
+}
+
+.search-result-item:hover .res-arrow {
+    color: var(--primary-color);
+    transform: translateX(5px);
+}
+
+.view-all-res {
+    width: 100%;
+    text-align: center;
+    padding: 15px;
+    border: 1.5px solid #edf2f7;
+    border-radius: 12px;
+    background: white;
+    font-weight: 700;
+    color: var(--primary-color);
+    cursor: pointer;
+    margin-top: 20px;
+    transition: all 0.2s;
+}
+
+.view-all-res:hover {
+    background: #f0f7ff;
+    border-color: var(--primary-color);
+}
+
+.search-suggestions h4 {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #2d3748;
+}
+
+.tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.s-tag {
+    background: #f1f5f9;
+    padding: 8px 18px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.s-tag:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.no-res-state {
+    text-align: center;
+    padding: 40px;
+}
+
+.no-res-state p {
+    font-size: 18px;
+    color: #718096;
+}
+
+.no-res-state span {
+    color: #2d3748;
+    font-weight: 700;
+}
+
+.search-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 15, 45, 0.4);
+    backdrop-filter: blur(8px);
+    z-index: 5000;
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.animate-slide-down {
+    animation: slideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@media (max-width: 640px) {
+    .search-container-v2 {
+        width: 100%;
+        height: 100%;
+        max-height: 100%;
+        border-radius: 0;
+        margin: 0;
+    }
+    .search-body-v2 {
+        padding: 20px;
+    }
+}

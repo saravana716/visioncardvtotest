@@ -1,0 +1,198 @@
+import React, { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
+import "./Footer.css"
+import { FaInstagram, FaFacebookF, FaWhatsapp } from "react-icons/fa";
+import logo from "../../assets/vision_cart_logo.png"
+import { useSiteSettings } from '../../hooks/useSiteSettings';
+
+const Footers = () => {
+  const navigate = useNavigate();
+  const siteSettings = useSiteSettings();
+  const logoSrc = siteSettings.logoUrl || logo;
+
+  // Admin-managed URLs are untrusted: only accept http(s) (blocks javascript:
+  // and other schemes), otherwise use the safe default.
+  const sanitizeUrl = (url, fallback) => {
+    const s = String(url || '').trim();
+    return /^https?:\/\//i.test(s) ? s : fallback;
+  };
+  // Open external links with noopener/noreferrer to avoid reverse-tabnabbing.
+  const openExternal = (url) => {
+    const s = String(url || '').trim();
+    if (/^https?:\/\//i.test(s)) window.open(s, '_blank', 'noopener,noreferrer');
+  };
+
+  const instagramUrl = sanitizeUrl(siteSettings.socialInstagram, 'https://www.instagram.com/visionkart.onlinestore/');
+  const facebookUrl = sanitizeUrl(siteSettings.socialFacebook, 'https://www.facebook.com/profile.php?id=61570766005925');
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isCopyrightVisible, setIsCopyrightVisible] = useState(false);
+  const copyrightRef = useRef(null);
+
+  const openWhatsApp = () => {
+    // Admin's socialWhatsApp may be a full http(s) URL or a phone number.
+    const raw = String(siteSettings.socialWhatsApp || '').trim();
+    const DEFAULT_WA = 'https://wa.me/917871333302';
+    let url = DEFAULT_WA;
+    if (/^https?:\/\//i.test(raw)) {
+      url = raw;
+    } else {
+      const digits = raw.replace(/\D/g, '');
+      if (digits) url = `https://wa.me/${digits}`;
+    }
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleFloatingClick = (e) => {
+    e.stopPropagation();
+    setIsChatOpen(prev => !prev);
+  };
+
+  useEffect(() => {
+    const handleOutsideClick = () => {
+      setIsChatOpen(false);
+    };
+    if (isChatOpen) {
+      window.addEventListener('click', handleOutsideClick);
+    }
+    return () => {
+      window.removeEventListener('click', handleOutsideClick);
+    };
+  }, [isChatOpen]);
+
+  // Hide the "Chat with us" pill once the footer copyright row is in view so
+  // the fixed-position pill doesn't sit on top of the centered "Made with..."
+  // text. The round WhatsApp button stays.
+  useEffect(() => {
+    const target = copyrightRef.current;
+    if (!target || typeof IntersectionObserver === 'undefined') return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsCopyrightVisible(entry.isIntersecting),
+      { threshold: 0.1 }
+    );
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <footer className='footer-container'>
+        {/* Marquee Section - Only Logo Scroll */}
+        <div className='footer-marquee'>
+            <div className='marquee-content'>
+                {[...Array(8)].map((_, i) => (
+                    <img key={i} src={logoSrc} alt="VisionKart Logo" className="marquee-logo-only" />
+                ))}
+            </div>
+            <div className='marquee-content'>
+                {[...Array(8)].map((_, i) => (
+                    <img key={i} src={logoSrc} alt="VisionKart Logo" className="marquee-logo-only" />
+                ))}
+            </div>
+        </div>
+
+        {/* Main Footer Content */}
+        <div className='footer-main'>
+            <div className='footer-column brand-column'>
+                <h3>The VisionKart Promise</h3>
+                <p>Your trusted destination for high-quality, affordable eyewear. See better, feel better, and express your style effortlessly.</p>
+            </div>
+
+            <div className='footer-column'>
+                <h3>Quick Links</h3>
+                <ul>
+                    <li onClick={() => navigate('/')}>Home</li>
+                    <li onClick={() => navigate('/about')}>About</li>
+                    <li onClick={() => navigate('/products')}>Products</li>
+                    {/* <li onClick={() => navigate('/blogs')}>Blogs</li> */}
+                    <li onClick={() => navigate('/contact')}>Contact</li>
+                </ul>
+            </div>
+
+            <div className='footer-column'>
+                <h3>Category</h3>
+                <ul>
+                    <li onClick={() => navigate('/products')}>Spectacles</li>
+                    <li onClick={() => navigate('/products')}>Sunglasses</li>
+                    <li onClick={() => navigate('/products')}>Reading Glasses</li>
+                    <li onClick={() => navigate('/products')}>Computer Glasses</li>
+                    <li onClick={() => navigate('/products')}>Kids Collection</li>
+                    <li onClick={() => navigate('/products')}>Contact Lenses</li>
+                </ul>
+            </div>
+
+            <div className='footer-column legal-column'>
+                <h3>Legal</h3>
+                <ul>
+                    <li onClick={() => navigate('/faq')}>FAQ</li>
+                    <li onClick={() => navigate('/terms-and-conditions')}>Terms & Condition</li>
+                    <li onClick={() => navigate('/privacy-policy')}>Privacy Policy</li>
+                    <li onClick={() => navigate('/refund-and-return')}>Refund & Return</li>
+                    <li onClick={() => navigate('/shipping-policy')}>Shipping Policy</li>
+                    <li onClick={() => navigate('/prescription-policy')}>Prescription Policy</li>
+                    <li onClick={() => navigate('/customer-support')}>Customer Support</li>
+                </ul>
+            </div>
+
+            <div className='footer-column social-column'>
+                <h3>Connect & Follow</h3>
+                <div className='social-icons'>
+                    <div className='social-icon-wrapper' onClick={() => openExternal(instagramUrl)} style={{ cursor: 'pointer' }}><FaInstagram /></div>
+                    <div className='social-icon-wrapper' onClick={() => openExternal(facebookUrl)} style={{ cursor: 'pointer' }}><FaFacebookF /></div>
+                    <div className='social-icon-wrapper' onClick={(e) => {
+                        e.stopPropagation();
+                        setIsChatOpen(prev => !prev);
+                        const container = document.querySelector('.whatsapp-widget-container');
+                        if (container) {
+                            container.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                        }
+                    }}><FaWhatsapp /></div>
+                </div>
+            </div>
+        </div>
+
+        {/* Fixed Floating WhatsApp Button with Chat Widget */}
+        <div className="whatsapp-widget-container" onClick={(e) => e.stopPropagation()}>
+            {isChatOpen && (
+                <div className="whatsapp-chat-popup">
+                    <div className="chat-header">
+                        <img src={logoSrc} alt="VisionKart Support" className="chat-avatar" />
+                        <div className="chat-header-info">
+                            <h4>VisionKart Support</h4>
+                            <span className="online-status"><span className="dot"></span>Online</span>
+                        </div>
+                        <button className="chat-close-btn" onClick={(e) => { e.stopPropagation(); setIsChatOpen(false); }}>×</button>
+                    </div>
+                    <div className="chat-body">
+                        <p className="chat-msg">Hello there! 👋</p>
+                        <p className="chat-msg text-bold">How can we help you today? Chat with us on WhatsApp for instant assistance!</p>
+                    </div>
+                    <div className="chat-footer">
+                        <button className="chat-send-btn" onClick={() => { openWhatsApp(); setIsChatOpen(false); }}>
+                            <FaWhatsapp style={{ marginRight: '8px', fontSize: '18px' }} />
+                            Start Chat
+                        </button>
+                    </div>
+                </div>
+            )}
+            
+            <div className="whatsapp-button-row">
+                {!isChatOpen && !isCopyrightVisible && (
+                    <div className="whatsapp-tooltip-pill" onClick={handleFloatingClick}>
+                        Chat with us
+                    </div>
+                )}
+                <div className={`fixed-whatsapp-btn ${isChatOpen ? 'active' : ''}`} onClick={handleFloatingClick} title="Chat with us on WhatsApp">
+                    <FaWhatsapp />
+                </div>
+            </div>
+        </div>
+
+        {/* Copyright Section */}
+        <div className='footer-copyright' ref={copyrightRef}>
+            <p>© Copyright 2025 VisionKart — All Rights Reserved.</p>
+            <p>Made with <span style={{color: 'red'}}>♥</span> by VisionKart Team</p>
+        </div>
+    </footer>
+  )
+}
+
+export default Footers

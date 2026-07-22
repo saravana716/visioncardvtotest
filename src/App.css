@@ -1,0 +1,7 @@
+.App{
+  width: 100vw;
+  min-height:100vh; /* Changed from height: 100vh */
+  overflow-x: hidden;
+  font-family: "Poppins", sans-serif;
+
+}
