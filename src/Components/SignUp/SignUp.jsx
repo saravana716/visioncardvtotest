@@ -35,6 +35,23 @@ const SignUp = () => {
       return;
     }
 
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&*!]).{8,}$/;
+    if (!passwordRegex.test(formData.password)) {
+      toast.error(
+        <span>
+          <strong>Password must meet the following requirements:</strong><br />
+          ✅ At least 8 characters<br />
+          ✅ One uppercase letter (A-Z)<br />
+          ✅ One lowercase letter (a-z)<br />
+          ✅ One number (0-9)<br />
+          ✅ One special character (@#$%^&*!)
+        </span>,
+        { duration: 6000 }
+      );
+      setLoading(false);
+      return;
+    }
+
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
       const user = userCredential.user;
@@ -146,12 +163,7 @@ const SignUp = () => {
           required
         />
     </div>
-    <div className='forminput'>
-        <p>– Must be at least 8 characters</p>
-        <p>– Must include one lowercase character</p>
-        <p>– Must include one uppercase character</p>
-        <p>– Can't be too common</p>
-    </div>
+
     <div className='formButtons'>
         <button type="submit" disabled={loading}>
           {loading ? 'Signing up...' : 'Sign up'}

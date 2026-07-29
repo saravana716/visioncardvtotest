@@ -1,6 +1,6 @@
 .newsletter-section {
-    background: #001529;
-    padding: 80px 20px;
+    background: url('../../assets/vision1.png') no-repeat center center / cover;
+    padding: 160px 20px;
     color: #fff;
     position: relative;
     overflow: hidden;
@@ -18,7 +18,7 @@
 }
 
 .newsletter-container {
-    max-width: 900px;
+    max-width: 1200px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
@@ -33,13 +33,15 @@
     font-weight: 800;
     margin-bottom: 15px;
     letter-spacing: -1px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
 }
 
 .newsletter-content p {
     font-size: 18px;
-    color: rgba(255,255,255,0.7);
+    color: rgba(255,255,255,0.9);
     margin-bottom: 40px;
     max-width: 600px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
 }
 
 .newsletter-form {

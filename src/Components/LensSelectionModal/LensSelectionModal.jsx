@@ -552,6 +552,27 @@ const LensSelectionModal = ({
                                         <button className="cl-power-btn active">With Power</button>
                                     </div>
 
+                                    <div className="cl-power-row no-border mt-3 mb-3" style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.05)', paddingBottom: '15px' }}>
+                                        <div className="cl-row-label">
+                                            <span className="main-label">Quantity</span>
+                                            <span className="sub-label">Select total boxes</span>
+                                        </div>
+                                        <div className="cl-dropdown-col qty-select-col">
+                                            <select 
+                                                className="cl-select-premium cl-select" 
+                                                value={clRightBoxes} 
+                                                onChange={e => {
+                                                    const val = parseInt(e.target.value);
+                                                    setClRightBoxes(val);
+                                                    setClLeftBoxes(val);
+                                                }}
+                                                style={{ paddingRight: '2.5rem' }}
+                                            >
+                                                {[1,2,3,4,5,6,7,8,9,10].map(n => <option key={n} value={n}>{n}</option>)}
+                                            </select>
+                                        </div>
+                                    </div>
+
                                     <div className="compact-power-flow main-selector cl-power-options">
                                         <div 
                                             className={`power-option-card ${contactLensPowerOption === 'manual' ? 'active' : ''}`}
@@ -592,23 +613,6 @@ const LensSelectionModal = ({
                                                         </div>
                                                     </div>
                                                 </a>
-                                                
-                                                <div className="cl-power-row no-border mt-3">
-                                                    <div className="cl-row-label">
-                                                        <span className="main-label">Quantity</span>
-                                                        <span className="sub-label">Select total boxes</span>
-                                                    </div>
-                                                    <div className="cl-dropdown-col qty-select-col">
-                                                        <select 
-                                                            className="cl-select-premium cl-select" 
-                                                            value={clRightBoxes} 
-                                                            onChange={e => setClRightBoxes(parseInt(e.target.value))}
-                                                            style={{ paddingRight: '2.5rem' }}
-                                                        >
-                                                            {[1,2,3,4,5,6,7,8,9,10].map(n => <option key={n} value={n}>{n}</option>)}
-                                                        </select>
-                                                    </div>
-                                                </div>
                                             </div>
                                         )}
 
@@ -649,23 +653,6 @@ const LensSelectionModal = ({
                                                         <button className="cl-dropdown-btn" onClick={() => setShowPowerSelectorModal('left')} disabled={!clLeftEyeSelected}>
                                                             {clLeftSph || 'Select'} <span className="arrow">▼</span>
                                                         </button>
-                                                    </div>
-                                                </div>
-
-                                                <div className="cl-power-row">
-                                                    <div className="cl-row-label">
-                                                        <span className="main-label">No. of Boxes</span>
-                                                        <span className="sub-label">3 lens / box</span>
-                                                    </div>
-                                                    <div className="cl-dropdown-col">
-                                                        <select className="cl-select-premium" disabled={!clRightEyeSelected} value={clRightBoxes} onChange={e => setClRightBoxes(parseInt(e.target.value))}>
-                                                            {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
-                                                        </select>
-                                                    </div>
-                                                    <div className="cl-dropdown-col">
-                                                        <select className="cl-select-premium" disabled={!clLeftEyeSelected} value={clLeftBoxes} onChange={e => setClLeftBoxes(parseInt(e.target.value))}>
-                                                            {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
-                                                        </select>
                                                     </div>
                                                 </div>
                                             </div>

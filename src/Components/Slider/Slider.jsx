@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import sliderimg from "../../assets/sliderimg.png";
-import image1 from "../../assets/image 1.png";
+import banner1 from "../../assets/2 png.png";
+import banner2 from "../../assets/3png.png";
+import banner3 from "../../assets/4png.png";
 import "./Slider.css";
 
 const Slider = () => {
@@ -12,7 +13,7 @@ const Slider = () => {
             subheading: 'Elevate Your Style with Premium Frames.',
             desc1: 'Choose from a wide range of curated collections that match your personality',
             desc2: 'and make a statement wherever you go.',
-            image: sliderimg,
+            image: banner1,
             color: '#FF0075'
         },
         {
@@ -21,7 +22,7 @@ const Slider = () => {
             subheading: 'Find Your Perfect Eyewear. Try Before You Buy.',
             desc1: 'Experience frames instantly with our Virtual Try-On (Live AR + Photo Upload)',
             desc2: 'and discover eyewear that fits your style perfectly.',
-            image: sliderimg,
+            image: banner2,
             color: '#FF0075'
         },
         {
@@ -30,7 +31,7 @@ const Slider = () => {
             subheading: 'Comfort Meets Style. Designed for You.',
             desc1: 'Lightweight materials and ergonomic designs ensuring all-day comfort',
             desc2: 'without compromising on the trendiest looks.',
-            image: image1,
+            image: banner3,
             color: '#FF0075'
         }
     ];

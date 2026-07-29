@@ -58,8 +58,19 @@ const Profile = () => {
     const handleChangePassword = async (e) => {
         e.preventDefault();
         const { current, next, confirm } = passwordForm;
-        if (next.length < 6) {
-            toast.error('New password must be at least 6 characters.');
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&*!]).{8,}$/;
+        if (!passwordRegex.test(next)) {
+            toast.error(
+                <span>
+                    <strong>New password must meet the following requirements:</strong><br />
+                    ✅ At least 8 characters<br />
+                    ✅ One uppercase letter (A-Z)<br />
+                    ✅ One lowercase letter (a-z)<br />
+                    ✅ One number (0-9)<br />
+                    ✅ One special character (@#$%^&*!)
+                </span>,
+                { duration: 6000 }
+            );
             return;
         }
         if (next !== confirm) {

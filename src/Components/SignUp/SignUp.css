@@ -36,13 +36,14 @@
     justify-content: flex-start;
     flex-direction: column;
     color: white;
+    padding-top:70px;
     color: white;
     gap: 15px;
 }
 .signupForm h1{
     font-size: 32px;
     font-weight: 600;
-    margin-bottom: 25px;
+    margin-bottom: 5px;
     letter-spacing: -0.5px;
 }
 

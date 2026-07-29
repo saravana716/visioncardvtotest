@@ -202,7 +202,7 @@
     min-height: 50px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     padding: 10px var(--spacing-md);
     background-color: var(--primary-color);
     color: white;
@@ -210,11 +210,11 @@
     z-index: 2400; /* Just below main navbar */
 }
 .navleft {
-    flex: 1;
     max-width: 1200px;
+    width: 100%;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
     gap: clamp(10px, 2vw, 40px);
 }
 .navleft li{

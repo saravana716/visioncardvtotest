@@ -319,10 +319,6 @@ const Navbar = () => {
                     </li>
                 ))}
             </div>
-            <div className='navright-actions'>
-                {/* <button className='btn-home-tryon' onClick={() => navigate('/home-try-on')}>Home Try-On</button> */}
-                <button className='btn-virtual-tryon' onClick={() => navigate('/virtual-try-on')}>3D Virtual Try-On</button>
-            </div>
             {activeCategory && <MegaMenu category={activeCategory} onClose={handleMouseLeave} />}
         </div>
         <SideDrawer isOpen={cartOpen} onClose={() => setCartOpen(false)} initialTab={drawerTab} />

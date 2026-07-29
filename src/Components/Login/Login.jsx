@@ -58,6 +58,24 @@ const Login = () => {
   const handleEmailLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
+
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&*!]).{8,}$/;
+    if (!passwordRegex.test(password)) {
+      toast.error(
+        <span>
+          <strong>Password must meet the following requirements:</strong><br />
+          ✅ At least 8 characters<br />
+          ✅ One uppercase letter (A-Z)<br />
+          ✅ One lowercase letter (a-z)<br />
+          ✅ One number (0-9)<br />
+          ✅ One special character (@#$%^&*!)
+        </span>,
+        { duration: 6000 }
+      );
+      setLoading(false);
+      return;
+    }
+
     try {
       await signInWithEmailAndPassword(auth, email, password);
       syncRememberedEmail();
