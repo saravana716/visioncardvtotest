@@ -1,8 +1,10 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import sl1 from "../../assets/sl1.png"
 import "./BookAppointment.css"
 
 const BookAppointment = () => {
+  const navigate = useNavigate();
   return (
     <>
     <div className='book'>
@@ -11,7 +13,7 @@ const BookAppointment = () => {
        <div>
          <p>Instantly see how every frame suits your face with VisionKart’s Virtual Try-On. Choose. Try. Buy — all in seconds.</p>
        </div>
-        <button>Try Frames Virtually</button>
+        <button onClick={() => navigate('/virtual-try-on')}>Try Frames Virtually</button>
         </div>
         <div className='bookright'>
             <img 

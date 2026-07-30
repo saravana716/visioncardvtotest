@@ -156,6 +156,7 @@ const Navbar = () => {
             </div>
             <div className='icons'>
                 <div className='searchinput'>
+                    <IoIosSearch className='search' onClick={() => setIsSearchOpen(true)} style={{cursor: 'pointer'}} />
                     <input 
                         type="text" 
                         placeholder="Search..." 
@@ -166,7 +167,6 @@ const Navbar = () => {
                             }
                         }}
                     />
-                    <IoIosSearch className='search' onClick={() => setIsSearchOpen(true)} style={{cursor: 'pointer'}} />
                 </div>
                 <div className='iconlist'>
                     <div className='icon-with-badge' onClick={() => { 

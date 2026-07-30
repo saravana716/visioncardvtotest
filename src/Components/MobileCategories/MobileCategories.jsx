@@ -1,91 +1,94 @@
-import { useState, useEffect } from 'react';
 import './MobileCategories.css';
-import { getCategories } from '../../services/firestoreService';
 import { useNavigate } from 'react-router-dom';
-import { 
-  FaGlasses, 
-  FaSun, 
-  FaLaptop, 
-  FaBookOpen, 
-  FaEye, 
-  FaBaby, 
-  FaChevronRight 
-} from 'react-icons/fa';
+import { FaChevronRight } from 'react-icons/fa';
+
+// Import category images
+import imgContactLenses from '../../assets/contactlens.png';
+import imgSpectacles from '../../assets/spec.png';
+import imgSunglasses from '../../assets/sun.png';
+import imgComputerGlasses from '../../assets/com.png';
+import imgReadingGlasses from '../../assets/read.png';
+import imgKidsCollection from '../../assets/kids.png';
+
+
+const CATEGORY_ITEMS = [
+  {
+    name: 'Contact Lenses',
+    subtitle: 'Daily, Monthly & Color',
+    image: imgContactLenses,
+    bgGradient: 'linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%)',
+  },
+  {
+    name: 'Spectacles',
+    subtitle: 'Men - Women - Kids',
+    image: imgSpectacles,
+    bgGradient: 'linear-gradient(135deg, #f1f5f9 0%, #ffffff 100%)',
+  },
+  {
+    name: 'Sunglasses',
+    subtitle: 'UV Protection',
+    image: imgSunglasses,
+    bgGradient: 'linear-gradient(135deg, #ffedd5 0%, #ffffff 100%)',
+  },
+  {
+    name: 'Computer Glasses',
+    subtitle: 'Blue Light Protection',
+    image: imgComputerGlasses,
+    bgGradient: 'linear-gradient(135deg, #ecfeff 0%, #ffffff 100%)',
+  },
+  {
+    name: 'Reading Glasses',
+    subtitle: 'Clear & Comfortable',
+    image: imgReadingGlasses,
+    bgGradient: 'linear-gradient(135deg, #f5ebe0 0%, #ffffff 100%)',
+  },
+  {
+    name: 'Kids Collection',
+    subtitle: 'For Little Ones',
+    image: imgKidsCollection,
+    bgGradient: 'linear-gradient(135deg, #fce7f3 0%, #ffffff 100%)',
+  }
+];
 
 const MobileCategories = () => {
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchCats = async () => {
-      const data = await getCategories();
-      if (data.length > 0) {
-        setCategories(data);
-      } else {
-        const fallbackNames = ['Spectacles', 'Sunglasses', 'Contact Lenses', 'Computer Glasses', 'Kids Collection', 'Reading Glasses'];
-        setCategories(fallbackNames.map(name => ({ id: name, name })));
-      }
-      setLoading(false);
-    };
-    fetchCats();
-  }, []);
-
-  const getCategoryTheme = (name) => {
-    switch (name) {
-      case 'Contact Lenses':
-        return { icon: <FaEye />, color: '#00d2fc', bg: 'rgba(0, 210, 252, 0.1)' };
-      case 'Kids Collection':
-      case 'Kids Eyewear':
-        return { icon: <FaBaby />, color: '#ff9f43', bg: 'rgba(255, 159, 67, 0.1)' };
-      case 'Computer Glasses':
-        return { icon: <FaLaptop />, color: '#1dd1a1', bg: 'rgba(29, 209, 161, 0.1)' };
-      case 'Sunglasses':
-        return { icon: <FaSun />, color: '#ff6b6b', bg: 'rgba(255, 107, 107, 0.1)' };
-      case 'Reading Glasses':
-        return { icon: <FaBookOpen />, color: '#a55eea', bg: 'rgba(165, 94, 234, 0.1)' };
-      case 'Spectacles':
-      default:
-        return { icon: <FaGlasses />, color: '#ff0075', bg: 'rgba(255, 0, 117, 0.1)' };
-    }
-  };
 
   const handleCategoryClick = (categoryName) => {
     navigate(`/products?category=${encodeURIComponent(categoryName)}`);
   };
 
-  if (loading) return null;
-
   return (
     <div className="mobile-categories">
       <div className="mobile-categories-header">
-        <h3 className="section-title">Shop by Category</h3>
-        <p className="section-subtitle">Choose from our handpicked collections</p>
+        <h3 className="section-title">Shop by Categories</h3>
+        <p className="section-subtitle">Handpicked collections for you</p>
       </div>
       <div className="mobile-categories-list">
-        {categories.map((category) => {
-          const theme = getCategoryTheme(category.name);
-          return (
-            <div 
-              key={category.id || category.name} 
-              className="mobile-category-row"
-              onClick={() => handleCategoryClick(category.name)}
-            >
-              <div className="category-left">
-                <div className="category-icon-wrapper" style={{ backgroundColor: theme.bg, color: theme.color }}>
-                  {theme.icon}
-                </div>
-                <span className="category-name">{category.name}</span>
-              </div>
-              <div className="category-right">
+        {CATEGORY_ITEMS.map((item) => (
+          <div 
+            key={item.name} 
+            className="mobile-category-card"
+            style={{ background: item.bgGradient }}
+            onClick={() => handleCategoryClick(item.name)}
+          >
+            <div className="category-text-container">
+              <h4 className="category-title">{item.name}</h4>
+              <p className="category-subtitle">{item.subtitle}</p>
+            </div>
+            <div className="category-image-container">
+              <img src={item.image} alt={item.name} className="category-image" />
+            </div>
+            <div className="category-chevron-container">
+              <div className="category-chevron-circle">
                 <FaChevronRight className="chevron-icon" />
               </div>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
     </div>
   );
 };
 
 export default MobileCategories;
+

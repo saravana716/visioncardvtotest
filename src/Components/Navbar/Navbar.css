@@ -191,6 +191,7 @@
     font-size: 20px;
     cursor: pointer;
     color: var(--primary-color);
+    margin-right: 8px;
     transition: transform 0.3s ease;
 }
 
@@ -219,7 +220,7 @@
 }
 .navleft li{
     list-style: none;
-    font-size: var(--fs-sm);
+    font-size: calc(var(--fs-sm) + 1.5px);
     font-weight: 500;
     cursor: pointer;
     padding: 8px 0;

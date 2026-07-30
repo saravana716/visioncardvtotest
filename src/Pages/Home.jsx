@@ -93,7 +93,7 @@ const Home = () => {
           
           {/* Ensure UserSlider is shown even if there are fewer than 3 dynamic categories after slice */}
           {categories.length < 3 && <div className="scroll-reveal"><UserSlider/></div>}
-          <div className="scroll-reveal"><TrendyCollection /></div>
+          <div className="scroll-reveal"><TrendyCollection title="Premium Contact Lenses" categoryName="Contact Lenses" /></div>
           <div className="scroll-reveal"><NewsLetter /></div>
         </>
       )}

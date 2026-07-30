@@ -93,7 +93,25 @@ const Footers = () => {
         <div className='footer-main'>
             <div className='footer-column brand-column'>
                 <h3>The VisionKart Promise</h3>
-                <p>VisionKart is your trusted destination for premium eyewear. We offer stylish spectacles, sunglasses, computer glasses, reading glasses, and contact lenses at affordable prices. Our mission is to help you see clearly, look confident, and enjoy a comfortable shopping experience with quality products and reliable customer support.</p>
+                <p>Visionkart is your preferred destination for premium eyewear. We offer stylish spectacles, sunglasses, computer glasses, reading glasses, and contact lenses at affordable prices. Our mission is to help you see clearly, look confident, and enjoy a comfortable shopping experience with quality products and reliable customer support.</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '14px', color: '#e0e0e0', lineHeight: '1.6', marginTop: '20px' }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'flex-start', gap: '8px' }}>
+                        <span>📍</span>
+                        <span>19, Thiruthangal Road, Near Senaithalaivar Kalyana Mandapam, SIVAKASI - 626123</span>
+                    </span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                        <span>📞</span>
+                        <a href="tel:+917871333302" style={{ color: 'inherit', textDecoration: 'none' }}>+91 78713 33302</a>
+                    </span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                        <span>📧</span>
+                        <span onClick={() => window.open('mailto:support@visionkart.online')} style={{ cursor: 'pointer' }}>support@visionkart.online</span>
+                    </span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                        <span>🌐</span>
+                        <span onClick={() => window.open('https://visionkart.online', '_blank')} style={{ cursor: 'pointer' }}>visionkart.online</span>
+                    </span>
+                </div>
             </div>
 
             <div className='footer-column'>
@@ -101,8 +119,6 @@ const Footers = () => {
                 <ul>
                     <li onClick={() => navigate('/')}>Home</li>
                     <li onClick={() => navigate('/about')}>About Us</li>
-                    <li onClick={() => navigate('/products')}>Shop</li>
-                    <li onClick={() => navigate('/products')}>Categories</li>
                     <li onClick={() => navigate('/products')}>Offers</li>
                     <li onClick={() => navigate('/contact')}>Contact Us</li>
                 </ul>
@@ -117,7 +133,6 @@ const Footers = () => {
                     <li onClick={() => navigate('/products?category=Reading Glasses')}>Reading Glasses</li>
                     <li onClick={() => navigate('/products?category=Kids Collection')}>Kids Eyewear</li>
                     <li onClick={() => navigate('/products?category=Contact Lenses')}>Contact Lenses</li>
-                    <li onClick={() => navigate('/products?category=Accessories')}>Accessories</li>
                 </ul>
             </div>
 
@@ -132,30 +147,10 @@ const Footers = () => {
                     <li onClick={() => navigate('/prescription-policy')}>Prescription Guide</li>
                     <li onClick={() => navigate('/orders')}>Track Your Order</li>
                     <li onClick={() => navigate('/contact')}>Contact Support</li>
-                    <li onClick={() => navigate('/contact')}>Contact Us</li>
                 </ul>
             </div>
 
             <div className='footer-column contact-column'>
-                <h3>VisionKart Optical</h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '14px', color: '#e0e0e0', lineHeight: '1.6', marginBottom: '20px' }}>
-                    <span style={{ display: 'inline-flex', alignItems: 'flex-start', gap: '8px' }}>
-                        <span>📍</span>
-                        <span>19, Thiruthangal Road, Near Senaithalaivar Kalyana Mandapam, Sivakasi – 626123</span>
-                    </span>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                        <span>📞</span>
-                        <span>+91 XXXXX XXXXX</span>
-                    </span>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                        <span>📧</span>
-                        <span onClick={() => window.open('mailto:support@visionkart.online')} style={{ cursor: 'pointer' }}>support@visionkart.online</span>
-                    </span>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                        <span>🌐</span>
-                        <span onClick={() => window.open('https://visionkart.online', '_blank')} style={{ cursor: 'pointer' }}>visionkart.online</span>
-                    </span>
-                </div>
                 <h3>Connect & Follow</h3>
                 <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)', marginBottom: '10px', marginTop: '10px' }}>
                     Follow VisionKart for the latest collections, offers, and updates.
@@ -215,7 +210,7 @@ const Footers = () => {
         {/* Copyright Section */}
         <div className='footer-copyright' ref={copyrightRef}>
             <p>© 2026 VisionKart. All Rights Reserved.</p>
-            <p>Designed & Developed with ❤️ by VisionKart Team</p>
+            <p>Kaira Technologies | Development: Nexsun Technologies</p>
         </div>
     </footer>
   )
