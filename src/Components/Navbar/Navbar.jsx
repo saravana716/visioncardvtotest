@@ -297,11 +297,7 @@ const Navbar = () => {
                         </>
                     )}
                     <li className="sidebar-section-title">Others</li>
-                    <li onClick={() => handleNavigation('/blogs')}>Blogs</li>
                     <li onClick={() => handleNavigation('/contact')}>Contact Us</li>
-                    <li className="sidebar-section-title">Premium Services</li>
-                    {/* <li onClick={() => handleNavigation('/home-try-on')}>Home Try-On</li> */}
-                    <li onClick={() => handleNavigation('/virtual-try-on')}>3D Virtual Try-On</li>
                 </ul>
             </div>
         </div>

@@ -25,6 +25,7 @@
 *{
   padding: 0;
   margin: 0;
+  overflow-x: hidden;
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent; /* Remove mobile tap highlight */
 }
@@ -35,7 +36,8 @@
 }
 
 body {
-    caret-color: transparent; /* Hide text caret on click for non-input elements */
+    caret-color: transparent;
+    overflow-x: hidden; /* Hide text caret on click for non-input elements */
 }
 
 input, textarea, [contenteditable="true"] {
@@ -58,7 +60,7 @@ body.no-scroll,
 /* Re-enable scrolling for inner containers */
 .drawer-body,
 .lens-modal,
-.mobile-sidebar {
+.sidebar-content {
     overflow-y: auto !important;
     touch-action: auto !important;
     -webkit-overflow-scrolling: touch !important;

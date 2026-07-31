@@ -1,43 +1,56 @@
 .contact {
     width: 100%;
-    height: 800px;
+    height: 480px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 40px 60px;
     color: white;
-    background: url('../../assets/lens12.png') no-repeat center center / cover;
-    gap: 50px;
+    background: url('../../assets/lens12.png') no-repeat left center / cover;
+    gap: 40px;
+    box-sizing: border-box;
+    border-radius: 24px;
+}
+
+.contact .discoverleft {
+    flex: 1.6;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    padding-bottom: 60px;
+    box-sizing: border-box;
 }
 
 .contact .discoverleft button {
-    padding: 12px 40px;
+    padding: 12px 35px;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     outline: none;
-    margin-top: 300px;
-    font-size: 15px;
-    font-weight: 600;
+    font-size: 14px;
+    font-weight: 700;
     color: #ff0075;
     background: white;
     cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
     transition: all 0.3s;
 }
 
 .contact .discoverleft button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.2);
+    background: #f8f9fa;
 }
 
 .contact .discoverright {
-    flex: 1;
+    flex: 1.2;
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 15px;
+    gap: 20px;
     overflow-x: auto;
     padding: 10px 0;
     min-width: 0;
+    box-sizing: border-box;
 }
 
 .contact .discoverright::-webkit-scrollbar {
@@ -46,30 +59,34 @@
 
 .contact .DiscoverCard {
     flex-shrink: 0;
-    width: 280px;
-    height: 350px;
+    width: 230px;
+    height: 310px;
     background: white;
-    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 16px;
     padding: 15px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     box-sizing: border-box;
-    transition: transform 0.3s;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 .contact .DiscoverCard:hover {
-    transform: translateY(-5px);
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(255, 0, 117, 0.15);
+    border-color: rgba(255, 0, 117, 0.2);
 }
 
 .contact .DiscoverCard .cardimg {
     width: 100%;
-    height: 250px;
+    height: 195px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #f8f8f8;
-    border-radius: 8px;
+    background-color: #f8fafc;
+    border-radius: 10px;
     overflow: hidden;
 }
 
@@ -81,13 +98,14 @@
 
 .contact .DiscoverCard button {
     width: 100%;
-    padding: 12px 0;
+    padding: 10px 0 0 0;
     border: none;
-    font-size: 18px;
-    font-weight: 600;
-    color: #003366;
-    background: white;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--primary-color);
+    background: transparent;
     text-align: center;
+    cursor: pointer;
 }
 
 @media (max-width: 1024px) {

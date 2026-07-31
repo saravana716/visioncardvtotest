@@ -57,7 +57,7 @@ const ContactPage = () => {
                         </div>
                         <h3>Email Us</h3>
                         <p className="card-desc">Send us your queries anytime</p>
-                        <a href="mailto:support@visionkart.online" className="card-link">support@visionkart.online</a>
+                        <a href="mailto:visionkart.onlinestore@gmail.com" className="card-link">visionkart.onlinestore@gmail.com</a>
                     </div>
 
                     <div className="contact-card">

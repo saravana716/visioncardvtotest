@@ -36,7 +36,7 @@ const OrderFailed = () => {
                     </div>
 
                     <div className="support-info">
-                        <p>Need help? Contact our support at <span>support@visionkart.com</span></p>
+                        <p>Need help? Contact our support at <span>visionkart.onlinestore@gmail.com</span></p>
                     </div>
                 </div>
             </div>

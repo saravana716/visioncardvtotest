@@ -26,7 +26,7 @@ const ContactLens = () => {
     return (
         <div className='contact'>
             <div className='discoverleft'>
-                <button onClick={() => navigate('/products?category=Contact Lenses')}>Shop Now</button>
+                {/* <button onClick={() => navigate('/products?category=Contact Lenses')}>Shop Now</button> */}
             </div>
             <div className='discoverright'>
                 {subcategories.map((data, index) => (

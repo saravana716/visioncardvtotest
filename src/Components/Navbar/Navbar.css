@@ -428,12 +428,14 @@
     top: 0;
     left: -280px;
     width: 280px;
-    height: 100%;
+    height: 100vh;
+    height: 100dvh;
     background-color: white;
     z-index: 2001;
     transition: left 0.3s ease;
     flex-direction: column;
     box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    overflow: hidden;
 }
 
 @media (max-width: 768px) {

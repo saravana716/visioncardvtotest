@@ -22,6 +22,25 @@
     gap: 30px;
     z-index: 10;
 }
+.slider-pretitle {
+    font-size: clamp(11px, 1.1vw, 14px);
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--secondary-color);
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.slider-pretitle::after {
+    content: '';
+    width: 30px;
+    height: 2px;
+    background-color: var(--secondary-color);
+    display: inline-block;
+}
 
 .sliderleft h1 {
     font-size: clamp(36px, 3.5vw, 58px);

@@ -8,21 +8,12 @@ import "./Slider.css";
 const Slider = () => {
     const slides = [
         {
-            heading: 'See the World Clearly',
-            highlight: 'with VisionKart',
+            heading: 'Look',
+            highlight: 'Better',
             subheading: 'Elevate Your Style with Premium Frames.',
             desc1: 'Choose from a wide range of curated collections that match your personality',
             desc2: 'and make a statement wherever you go.',
             image: banner1,
-            color: '#FF0075'
-        },
-        {
-            heading: 'See',
-            highlight: 'Better',
-            subheading: 'Find Your Perfect Eyewear. Try Before You Buy.',
-            desc1: 'Experience frames instantly with our Virtual Try-On (Live AR + Photo Upload)',
-            desc2: 'and discover eyewear that fits your style perfectly.',
-            image: banner2,
             color: '#FF0075'
         },
         {
@@ -32,6 +23,15 @@ const Slider = () => {
             desc1: 'Lightweight materials and ergonomic designs ensuring all-day comfort',
             desc2: 'without compromising on the trendiest looks.',
             image: banner3,
+            color: '#FF0075'
+        },
+        {
+            heading: 'See',
+            highlight: 'Better',
+            subheading: 'Find Your Perfect Eyewear. Try Before You Buy.',
+            desc1: 'Experience frames instantly with our Virtual Try-On (Live AR + Photo Upload)',
+            desc2: 'and discover eyewear that fits your style perfectly.',
+            image: banner2,
             color: '#FF0075'
         }
     ];
@@ -57,6 +57,7 @@ const Slider = () => {
         <div className='slider'>
             <div className='sliderleft'>
                 <div className='text-content'>
+                    <span className="slider-pretitle">See the world clearly with visionkart</span>
                     <h1>
                         <span className={`heading-text ${isAnimating ? 'slide-up-out' : 'slide-up-in'}`}>
                             {slide.heading}

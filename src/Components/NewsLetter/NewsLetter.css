@@ -107,25 +107,85 @@
 }
 
 @media (max-width: 600px) {
+    .newsletter-section {
+        background: url('../../assets/mobilea.jpeg') no-repeat center center / cover;
+        width: 100%;
+        aspect-ratio: 606 / 1280;
+        padding: 50px 20px 60px 20px !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+    }
+    .newsletter-container {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        align-items: center;
+        text-align: center;
+        box-sizing: border-box;
+    }
+    .newsletter-content {
+        margin-top: 15px;
+    }
     .newsletter-content h2 {
-        font-size: 28px;
+        font-size: 26px;
+        margin-bottom: 10px;
     }
     .newsletter-content p {
-        font-size: 15px;
+        font-size: 14px;
+        margin-bottom: 0px;
     }
-    .input-group {
+    .newsletter-form {
+        margin-bottom: 15px;
+        width: 100%;
+        max-width: 550px;
+    }
+    .input-group,
+    .input-group:focus-within {
         flex-direction: column;
-        background: transparent;
-        border: none;
-        padding: 0;
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
         gap: 15px;
+        box-shadow: none !important;
+        border-radius: 0 !important;
     }
     .input-group input {
-        background: rgba(255,255,255,0.05);
-        border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 100px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 9999px;
+        padding: 15px 25px;
+        height: 54px;
+        width: 100%;
+        box-sizing: border-box;
+        color: #ffffff;
+        -webkit-appearance: none;
+        box-shadow: none;
+        font-size: 15px;
+        outline: none;
+    }
+    .input-group input:focus {
+        border-color: rgba(255, 255, 255, 0.4) !important;
+        background: rgba(255, 255, 255, 0.12) !important;
     }
     .input-group button {
-        padding: 18px;
+        background: #FF0075;
+        color: #ffffff;
+        border-radius: 9999px;
+        padding: 0;
+        height: 54px;
+        width: 100%;
+        font-weight: 700;
+        font-size: 15px;
+        box-sizing: border-box;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-appearance: none;
+        box-shadow: 0 4px 15px rgba(255, 0, 117, 0.3);
     }
 }

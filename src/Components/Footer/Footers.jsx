@@ -95,6 +95,8 @@ const Footers = () => {
                 <h3>The VisionKart Promise</h3>
                 <p>Visionkart is your preferred destination for premium eyewear. We offer stylish spectacles, sunglasses, computer glasses, reading glasses, and contact lenses at affordable prices. Our mission is to help you see clearly, look confident, and enjoy a comfortable shopping experience with quality products and reliable customer support.</p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '14px', color: '#e0e0e0', lineHeight: '1.6', marginTop: '20px' }}>
+                <h3> VisionKart Opticals</h3>
+
                     <span style={{ display: 'inline-flex', alignItems: 'flex-start', gap: '8px' }}>
                         <span>📍</span>
                         <span>19, Thiruthangal Road, Near Senaithalaivar Kalyana Mandapam, SIVAKASI - 626123</span>
@@ -105,7 +107,7 @@ const Footers = () => {
                     </span>
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
                         <span>📧</span>
-                        <span onClick={() => window.open('mailto:support@visionkart.online')} style={{ cursor: 'pointer' }}>support@visionkart.online</span>
+                        <span onClick={() => window.open('mailto:visionkart.onlinestore@gmail.com')} style={{ cursor: 'pointer' }}>visionkart.onlinestore@gmail.com</span>
                     </span>
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
                         <span>🌐</span>
@@ -119,7 +121,7 @@ const Footers = () => {
                 <ul>
                     <li onClick={() => navigate('/')}>Home</li>
                     <li onClick={() => navigate('/about')}>About Us</li>
-                    <li onClick={() => navigate('/products')}>Offers</li>
+                    <li onClick={() => navigate('/products')}>Products</li>
                     <li onClick={() => navigate('/contact')}>Contact Us</li>
                 </ul>
             </div>
@@ -210,7 +212,7 @@ const Footers = () => {
         {/* Copyright Section */}
         <div className='footer-copyright' ref={copyrightRef}>
             <p>© 2026 VisionKart. All Rights Reserved.</p>
-            <p>Kaira Technologies | Development: Nexsun Technologies</p>
+            <p>Project Partner: Kaira Technologies | Development: Nexsun Technologies</p>
         </div>
     </footer>
   )
