@@ -45,32 +45,118 @@ const LensSelectionModal = ({
     const [clPowerTab, setClPowerTab] = useState('negative');
 
     const contactLensColors = ['#001f54', '#00d285', '#7b2cbf', '#ff007f'];
-    const isSolution = product && product.category === 'Contact Lenses' && Array.isArray(product.contactLensVariants) && product.contactLensVariants.length > 0;
+    const isSolution = product && product.category === 'Contact Lenses' && (
+        (Array.isArray(product.contactLensVariants) && product.contactLensVariants.length > 0) ||
+        /solution/i.test(product.contactLensSubcategory || '') ||
+        /solution/i.test(product.name || product.title || '')
+    );
     const contactLensPacks = (product && product.category === 'Contact Lenses')
         ? (isSolution
-            ? product.contactLensVariants.map((v, idx) => ({
-                id: v.id || v.title || `variant-${idx}`,
-                name: v.title || `${v.volumeMl || v.volume || ''}ml Bottle`,
-                price: parseInt(v.price || 0),
-                oldPrice: v.oldPrice ? parseInt(v.oldPrice) : null,
-                description: `Volume: ${v.volumeMl || v.volume || ''} ml`,
-                features: v.features || 'Sterile multi-purpose solution',
-                color: contactLensColors[idx % contactLensColors.length]
-              }))
+            ? (Array.isArray(product.contactLensVariants) && product.contactLensVariants.length > 0
+                ? product.contactLensVariants.map((v, idx) => {
+                    const basePriceInt = parsePriceToInt(product.price);
+                    const offerPriceInt = product.offerPrice ? parsePriceToInt(product.offerPrice) : null;
+                    const vPrice = parseInt(v.price || 0);
+                    
+                    let finalPrice = vPrice;
+                    let finalOldPrice = v.oldPrice ? parseInt(v.oldPrice) : null;
+                    
+                    if (offerPriceInt && vPrice === basePriceInt) {
+                        finalPrice = offerPriceInt;
+                        finalOldPrice = basePriceInt;
+                    }
+                    
+                    return {
+                        id: v.id || v.title || `variant-${idx}`,
+                        name: v.title || `${v.volumeMl || v.volume || ''}ml Bottle`,
+                        price: finalPrice,
+                        oldPrice: finalOldPrice,
+                        description: `Volume: ${v.volumeMl || v.volume || ''} ml`,
+                        features: v.features || 'Sterile multi-purpose solution',
+                        color: contactLensColors[idx % contactLensColors.length]
+                    };
+                  })
+                : (() => {
+                    const priceVal = parsePriceToInt(product.offerPrice || product.price);
+                    const oldPriceVal = product.offerPrice ? parsePriceToInt(product.price) : null;
+                    const match = (product.name || product.title || '').match(/(\d+)\s*ml/i);
+                    const volumeMl = match ? match[1] : '';
+                    return [{
+                        id: 'dynamic-variant-1',
+                        name: volumeMl ? `${volumeMl}ml Bottle` : 'Standard Bottle',
+                        price: priceVal,
+                        oldPrice: oldPriceVal,
+                        description: volumeMl ? `Volume: ${volumeMl} ml` : 'Standard Volume',
+                        features: 'Sterile multi-purpose solution',
+                        color: contactLensColors[0]
+                    }];
+                  })()
+              )
             : (Array.isArray(product.contactLensPacks) && product.contactLensPacks.length > 0
-                ? product.contactLensPacks.map((pkg, idx) => ({
-                    id: pkg.id || pkg.title || `pack-${idx}`,
-                    name: `${pkg.title || 'Standard'} Pack`,
-                    price: parseInt(pkg.price || 0),
-                    oldPrice: pkg.oldPrice ? parseInt(pkg.oldPrice) : null,
-                    description: pkg.quantity || '',
-                    features: pkg.features || (idx === 0 ? 'Daily Wear Comfort' : 'Maximum hydration'),
-                    color: contactLensColors[idx % contactLensColors.length]
-                  }))
-                : [
-                    { id: '3-lens-box', name: 'Standard Pack', price: 299, oldPrice: 364, description: '3 lens/box', features: 'Daily Wear Comfort', color: '#001f54' },
-                    { id: '6-lens-box', name: 'Value Pack', price: 549, oldPrice: 728, description: '6 lens/box', features: 'Maximum hydration', color: '#00d285' }
-                  ]
+                ? product.contactLensPacks.map((pkg, idx) => {
+                    const basePriceInt = parsePriceToInt(product.price);
+                    const offerPriceInt = product.offerPrice ? parsePriceToInt(product.offerPrice) : null;
+                    const pkgPrice = parseInt(pkg.price || 0);
+                    
+                    let finalPrice = pkgPrice;
+                    let finalOldPrice = pkg.oldPrice ? parseInt(pkg.oldPrice) : null;
+                    
+                    if (offerPriceInt && pkgPrice === basePriceInt) {
+                        finalPrice = offerPriceInt;
+                        finalOldPrice = basePriceInt;
+                    }
+                    
+                    const titleText = pkg.title || 'Standard';
+                    const hasPackWord = titleText.toLowerCase().includes('pack');
+                    
+                    return {
+                        id: pkg.id || pkg.title || `pack-${idx}`,
+                        name: hasPackWord ? titleText : `${titleText} Pack`,
+                        price: finalPrice,
+                        oldPrice: finalOldPrice,
+                        description: pkg.quantity || '',
+                        features: pkg.features || (idx === 0 ? 'Daily Wear Comfort' : 'Maximum hydration'),
+                        color: contactLensColors[idx % contactLensColors.length]
+                    };
+                  })
+                : (() => {
+                    const priceVal = parsePriceToInt(product.offerPrice || product.price);
+                    const oldPriceVal = product.offerPrice ? parsePriceToInt(product.price) : null;
+                    const nameLower = (product.name || product.title || '').toLowerCase();
+                    let qtyDesc = '';
+                    let packTitle = 'Standard Pack';
+                    
+                    const qtyMatch = nameLower.match(/(\d+)\s*(lens|pack|box|qty)/i);
+                    if (qtyMatch) {
+                        const num = qtyMatch[1];
+                        qtyDesc = `${num} lens/box`;
+                        packTitle = `${num} Pack`;
+                    } else if (product.size) {
+                        qtyDesc = product.size;
+                        packTitle = product.size;
+                    } else {
+                        qtyDesc = '1 lens/box';
+                    }
+                    
+                    let scheduleDesc = 'Daily Wear Comfort';
+                    if (nameLower.includes('monthly') || (product.replacementSchedule && product.replacementSchedule.toLowerCase().includes('monthly'))) {
+                        scheduleDesc = 'Monthly Disposable';
+                    } else if (nameLower.includes('daily') || (product.replacementSchedule && product.replacementSchedule.toLowerCase().includes('daily'))) {
+                        scheduleDesc = 'Daily Disposable';
+                    } else if (nameLower.includes('yearly') || (product.replacementSchedule && product.replacementSchedule.toLowerCase().includes('yearly'))) {
+                        scheduleDesc = 'Yearly Disposable';
+                    }
+
+                    return [{
+                        id: 'dynamic-pack-1',
+                        name: packTitle,
+                        price: priceVal,
+                        oldPrice: oldPriceVal,
+                        description: qtyDesc,
+                        features: scheduleDesc,
+                        color: contactLensColors[0]
+                    }];
+                  })()
               )
           )
         : [];
@@ -201,9 +287,10 @@ const LensSelectionModal = ({
             const totalBoxes = isSolution
                 ? clRightBoxes
                 : (contactLensPowerOption === 'later' ? clRightBoxes : (clRightEyeSelected ? clRightBoxes : 0) + (clLeftEyeSelected ? clLeftBoxes : 0));
+            
             lensPrice = packPrice * totalBoxes;
-            framePrice = basePriceInt * totalBoxes;
-            subtotal = framePrice + lensPrice;
+            framePrice = 0; // Contact lenses/solutions do not have a separate frame/base price!
+            subtotal = lensPrice;
         } else {
             lensPrice = 0;
             addOns = selectedEnhancements.reduce((sum, enh) => sum + (parseInt(enh.price || 0)), 0);
@@ -544,14 +631,6 @@ const LensSelectionModal = ({
                                 </div>
                             ) : (
                                 <>
-                                    <div className="cl-power-type-container">
-                                        <div className="cl-power-desc">
-                                            <span className="p-label">Power</span>
-                                            <span className="p-label">Type</span>
-                                        </div>
-                                        <button className="cl-power-btn active">With Power</button>
-                                    </div>
-
                                     <div className="cl-power-row no-border mt-3 mb-3" style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.05)', paddingBottom: '15px' }}>
                                         <div className="cl-row-label">
                                             <span className="main-label">Quantity</span>
@@ -571,6 +650,14 @@ const LensSelectionModal = ({
                                                 {[1,2,3,4,5,6,7,8,9,10].map(n => <option key={n} value={n}>{n}</option>)}
                                             </select>
                                         </div>
+                                    </div>
+
+                                    <div className="cl-power-type-container">
+                                        <div className="cl-power-desc">
+                                            <span className="p-label">Power</span>
+                                            <span className="p-label">Type</span>
+                                        </div>
+                                        <button className="cl-power-btn active">With Power</button>
                                     </div>
 
                                     <div className="compact-power-flow main-selector cl-power-options">
@@ -1013,10 +1100,12 @@ const LensSelectionModal = ({
 
                         {product.category === 'Contact Lenses' && (
                             <>
-                                <div className="p-line">
-                                    <span>Base Product Price:</span> 
-                                    <span>₹{calculatePriceDetails().framePrice}</span>
-                                </div>
+                                {calculatePriceDetails().framePrice > 0 && (
+                                    <div className="p-line">
+                                        <span>Base Product Price:</span> 
+                                        <span>₹{calculatePriceDetails().framePrice}</span>
+                                    </div>
+                                )}
                                 <div className="p-line">
                                     <span>
                                         {contactLensPacks.find(p => p.id === selectedClPack)?.name} ({isSolution ? `${clRightBoxes} Qty` : `${contactLensPowerOption === 'later' ? clRightBoxes : (clRightEyeSelected ? clRightBoxes : 0) + (clLeftEyeSelected ? clLeftBoxes : 0)} Boxes`}):

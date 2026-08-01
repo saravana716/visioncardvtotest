@@ -4,7 +4,7 @@
     width: 100%;
     overflow: hidden;
     font-family: 'Poppins', sans-serif;
-    margin-top: clamp(40px, 8vh, 80px); /* Added margin-top for spacing from content */
+    margin-top: clamp(20px, 4vh, 40px); /* Reduced margin-top for spacing from content */
 }
 
 /* --- Marquee Section --- */
@@ -392,6 +392,16 @@
 }
 
 @media (max-width: 768px) {
+    .footer-container {
+        margin-top: 15px;
+    }
+    .footer-marquee {
+        padding: 10px 0;
+    }
+    .marquee-logo-only {
+        height: 35px;
+        margin: 0 30px;
+    }
     .footer-main {
         grid-template-columns: 1fr;
     }

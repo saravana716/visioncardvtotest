@@ -212,7 +212,7 @@ const Footers = () => {
         {/* Copyright Section */}
         <div className='footer-copyright' ref={copyrightRef}>
             <p>© 2026 VisionKart. All Rights Reserved.</p>
-            <p>Project Partner: Kaira Technologies | Development: Nexsun Technologies</p>
+            <p>Designed & Developed by  Kaira Technologies</p>
         </div>
     </footer>
   )

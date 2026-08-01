@@ -36,11 +36,29 @@ const Navbar = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       const fetchedCategories = await getCategories();
+      const orderMap = {
+        'spectacles': 0,
+        'sunglasses': 1,
+        'kids collection': 2,
+        'computer glasses': 3,
+        'reading glasses': 4,
+        'contact lenses': 5
+      };
+      const sortCats = (cats) => {
+        return [...cats].sort((a, b) => {
+          const aName = (a.name || '').trim().toLowerCase();
+          const bName = (b.name || '').trim().toLowerCase();
+          const aIdx = orderMap[aName] !== undefined ? orderMap[aName] : 999;
+          const bIdx = orderMap[bName] !== undefined ? orderMap[bName] : 999;
+          return aIdx - bIdx;
+        });
+      };
+
       if (fetchedCategories.length > 0) {
-        setCategories(fetchedCategories);
+        setCategories(sortCats(fetchedCategories));
       } else {
         // Fallback to original list with basic structure if Firestore is empty
-        const fallbackNames = ['Spectacles', 'Sunglasses', 'Contact Lenses', 'Computer Glasses', 'Kids Collection', 'Reading Glasses'];
+        const fallbackNames = ['Spectacles', 'Sunglasses', 'Kids Collection', 'Computer Glasses', 'Reading Glasses', 'Contact Lenses'];
         setCategories(fallbackNames.map(name => ({ id: name, name })));
       }
     };

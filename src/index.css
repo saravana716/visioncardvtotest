@@ -25,9 +25,13 @@
 *{
   padding: 0;
   margin: 0;
-  overflow-x: hidden;
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent; /* Remove mobile tap highlight */
+}
+
+html, body, #root {
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 /* Remove default focus outline/line on click */

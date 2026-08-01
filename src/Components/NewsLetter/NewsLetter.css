@@ -110,18 +110,16 @@
     .newsletter-section {
         background: url('../../assets/mobilea.jpeg') no-repeat center center / cover;
         width: 100%;
-        aspect-ratio: 606 / 1280;
-        padding: 50px 20px 60px 20px !important;
+        padding: 60px 20px !important;
         display: flex;
         align-items: center;
         justify-content: center;
         box-sizing: border-box;
     }
     .newsletter-container {
-        height: 100%;
         display: flex;
         flex-direction: column;
-        justify-content: space-around;
+        gap: 25px;
         align-items: center;
         text-align: center;
         box-sizing: border-box;
