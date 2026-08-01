@@ -128,7 +128,8 @@ const ReviewSummaryModal = ({ isOpen, onClose, onConfirm, data, actionType }) =>
                                                     alt="Prescription" 
                                                 />
                                                 <div className="attach-overlay">
-                                                    <span>Tap to view full</span>
+                                                    <FaEye style={{ marginRight: '5px' }} />
+                                                    <span>View Full Image</span>
                                                 </div>
                                             </div>
                                         </div>

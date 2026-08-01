@@ -77,8 +77,10 @@ const LensSelectionModal = ({
                     };
                   })
                 : (() => {
-                    const priceVal = parsePriceToInt(product.offerPrice || product.price);
-                    const oldPriceVal = product.offerPrice ? parsePriceToInt(product.price) : null;
+                    const priceVal = parsePriceToInt(product.price);
+                    const oldPriceVal = product.originalPrice && product.originalPrice !== product.price
+                        ? parsePriceToInt(product.originalPrice)
+                        : null;
                     const match = (product.name || product.title || '').match(/(\d+)\s*ml/i);
                     const volumeMl = match ? match[1] : '';
                     return [{
@@ -120,31 +122,48 @@ const LensSelectionModal = ({
                     };
                   })
                 : (() => {
-                    const priceVal = parsePriceToInt(product.offerPrice || product.price);
-                    const oldPriceVal = product.offerPrice ? parsePriceToInt(product.price) : null;
-                    const nameLower = (product.name || product.title || '').toLowerCase();
+                    const priceVal = parsePriceToInt(product.price);
+                    const oldPriceVal = product.originalPrice && product.originalPrice !== product.price
+                        ? parsePriceToInt(product.originalPrice)
+                        : null;
+                    
                     let qtyDesc = '';
                     let packTitle = 'Standard Pack';
                     
-                    const qtyMatch = nameLower.match(/(\d+)\s*(lens|pack|box|qty)/i);
-                    if (qtyMatch) {
-                        const num = qtyMatch[1];
-                        qtyDesc = `${num} lens/box`;
-                        packTitle = `${num} Pack`;
-                    } else if (product.size) {
-                        qtyDesc = product.size;
-                        packTitle = product.size;
+                    if (product.contactLensPackSize) {
+                        qtyDesc = `${product.contactLensPackSize} lens/box`;
+                        packTitle = `${product.contactLensPackSize} Pack`;
                     } else {
-                        qtyDesc = '1 lens/box';
+                        const nameLower = (product.name || product.title || '').toLowerCase();
+                        const qtyMatch = nameLower.match(/(\d+)\s*(lens|pack|box|qty)/i);
+                        if (qtyMatch) {
+                            const num = qtyMatch[1];
+                            qtyDesc = `${num} lens/box`;
+                            packTitle = `${num} Pack`;
+                        } else if (product.size) {
+                            qtyDesc = product.size;
+                            packTitle = product.size;
+                        } else {
+                            qtyDesc = '1 lens/box';
+                        }
                     }
                     
                     let scheduleDesc = 'Daily Wear Comfort';
-                    if (nameLower.includes('monthly') || (product.replacementSchedule && product.replacementSchedule.toLowerCase().includes('monthly'))) {
-                        scheduleDesc = 'Monthly Disposable';
-                    } else if (nameLower.includes('daily') || (product.replacementSchedule && product.replacementSchedule.toLowerCase().includes('daily'))) {
-                        scheduleDesc = 'Daily Disposable';
-                    } else if (nameLower.includes('yearly') || (product.replacementSchedule && product.replacementSchedule.toLowerCase().includes('yearly'))) {
-                        scheduleDesc = 'Yearly Disposable';
+                    if (product.contactLensReplacementSchedule) {
+                        const sched = product.contactLensReplacementSchedule.trim().toLowerCase();
+                        if (sched === 'daily') scheduleDesc = 'Daily Disposable';
+                        else if (sched === 'monthly') scheduleDesc = 'Monthly Disposable';
+                        else if (sched === 'yearly') scheduleDesc = 'Yearly Disposable';
+                        else scheduleDesc = product.contactLensReplacementSchedule.charAt(0).toUpperCase() + product.contactLensReplacementSchedule.slice(1);
+                    } else {
+                        const nameLower = (product.name || product.title || '').toLowerCase();
+                        if (nameLower.includes('monthly') || (product.replacementSchedule && product.replacementSchedule.toLowerCase().includes('monthly'))) {
+                            scheduleDesc = 'Monthly Disposable';
+                        } else if (nameLower.includes('daily') || (product.replacementSchedule && product.replacementSchedule.toLowerCase().includes('daily'))) {
+                            scheduleDesc = 'Daily Disposable';
+                        } else if (nameLower.includes('yearly') || (product.replacementSchedule && product.replacementSchedule.toLowerCase().includes('yearly'))) {
+                            scheduleDesc = 'Yearly Disposable';
+                        }
                     }
 
                     return [{
@@ -474,7 +493,7 @@ const LensSelectionModal = ({
             lensType: isContactLens ? 'Contact Lens' : (isReadingGlasses ? 'Reading Glass' : selectedLensType),
             usage: selectedUsage,
             prescriptionType: isReadingGlasses ? 'Reading Glass Power' : (isContactLens ? (isSolution ? 'Not Applicable' : (contactLensPowerOption === 'manual' ? 'Manual Contact Lens Power' : 'Submit Later')) : (isSpectacles ? (spectaclesPowerOption === 'manual' ? 'Manual Prescription' : 'Submit Later') : prescriptionType)),
-            patientDetails: (isSpectacles && spectaclesPowerOption === 'manual') ? {
+            patientDetails: ((isSpectacles && spectaclesPowerOption === 'manual') || (isContactLens && contactLensPowerOption === 'manual')) ? {
                 name: userInfo.name,
                 phone: userInfo.phone,
                 prescriptionFile: prescriptionUrl || userInfo.previewUrl || userInfo.fileName
@@ -491,7 +510,13 @@ const LensSelectionModal = ({
                 rightBoxes: clRightBoxes,
                 leftBoxes: clLeftBoxes,
                 totalBoxesLater: contactLensPowerOption === 'later' ? clRightBoxes : null,
-                pack: contactLensPacks.find(p => p.id === selectedClPack)
+                pack: contactLensPacks.find(p => p.id === selectedClPack),
+                userInfo: (contactLensPowerOption === 'manual') ? {
+                    name: userInfo.name,
+                    phone: userInfo.phone,
+                    prescriptionUrl: prescriptionUrl || null,
+                    fileName: userInfo.fileName
+                } : null
             }) : (isReadingGlasses ? { readingPower } : (isSpectacles ? {
                 ...prescription,
                 userInfo: (spectaclesPowerOption === 'manual') ? {
@@ -726,7 +751,7 @@ const LensSelectionModal = ({
                                                     </label>
                                                 </div>
                                                 
-                                                <div className="cl-power-row no-border">
+                                                <div className="cl-power-row no-border" style={{ paddingBottom: '10px' }}>
                                                     <div className="cl-row-label">
                                                         <span className="main-label">Spherical</span>
                                                         <span className="sub-label">SPH</span>
@@ -740,6 +765,81 @@ const LensSelectionModal = ({
                                                         <button className="cl-dropdown-btn" onClick={() => setShowPowerSelectorModal('left')} disabled={!clLeftEyeSelected}>
                                                             {clLeftSph || 'Select'} <span className="arrow">▼</span>
                                                         </button>
+                                                    </div>
+                                                </div>
+
+                                                {/* Clear/Delete values button */}
+                                                {(clRightSph || clLeftSph) && (
+                                                    <div style={{ textAlign: 'right', marginBottom: '15px' }}>
+                                                        <button 
+                                                            type="button"
+                                                            className="back-to-table"
+                                                            style={{ 
+                                                                margin: 0, 
+                                                                padding: '6px 12px', 
+                                                                fontSize: '12px', 
+                                                                background: '#f8d7da', 
+                                                                color: '#721c24', 
+                                                                border: '1px solid #f5c6cb', 
+                                                                borderRadius: '4px',
+                                                                cursor: 'pointer'
+                                                            }}
+                                                            onClick={() => {
+                                                                setClRightSph('');
+                                                                setClLeftSph('');
+                                                            }}
+                                                        >
+                                                            Clear Powers
+                                                        </button>
+                                                    </div>
+                                                )}
+
+                                                <div className="manual-user-details animate-in" style={{ width: '100%', marginTop: '15px', borderTop: '1px solid rgba(0, 0, 0, 0.05)', paddingTop: '15px' }}>
+                                                    <div className="details-header" style={{ marginBottom: '10px', fontSize: '15px', fontWeight: '600' }}>Whose prescription is this</div>
+                                                    <div className="details-form">
+                                                        <div className="detail-input-group" style={{ marginBottom: '10px' }}>
+                                                            <input 
+                                                                type="text" 
+                                                                placeholder="Name" 
+                                                                value={userInfo.name} 
+                                                                onChange={(e) => setUserInfo({...userInfo, name: e.target.value})} 
+                                                            />
+                                                        </div>
+                                                        <div className="detail-input-group" style={{ marginBottom: '10px' }}>
+                                                            <input 
+                                                                type="text" 
+                                                                placeholder="Phone Number" 
+                                                                value={userInfo.phone} 
+                                                                onChange={(e) => setUserInfo({...userInfo, phone: e.target.value})} 
+                                                            />
+                                                        </div>
+                                                        <div className="prescription-upload-area">
+                                                            <label className="upload-box" style={{ display: 'block', border: '2px dashed #FF0075', borderRadius: '8px', padding: '15px', textAlign: 'center', cursor: 'pointer', background: 'rgba(255, 0, 117, 0.02)' }}>
+                                                                <input 
+                                                                    type="file" 
+                                                                    accept="image/*" 
+                                                                    onChange={(e) => {
+                                                                        const file = e.target.files[0];
+                                                                        if (file) {
+                                                                            const preview = URL.createObjectURL(file);
+                                                                            setUserInfo({
+                                                                                ...userInfo, 
+                                                                                file, 
+                                                                                fileName: file.name,
+                                                                                previewUrl: preview
+                                                                            });
+                                                                        }
+                                                                    }} 
+                                                                    style={{ display: 'none' }}
+                                                                />
+                                                                <div className="upload-content">
+                                                                    <div className="upload-icon" style={{ fontSize: '24px', marginBottom: '5px' }}>📷</div>
+                                                                    <p style={{ margin: 0, fontSize: '13px', color: '#555' }}>
+                                                                        {userInfo.fileName || 'Upload Prescription (Optional)'}
+                                                                    </p>
+                                                                </div>
+                                                            </label>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
