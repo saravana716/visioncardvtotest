@@ -303,9 +303,7 @@ const LensSelectionModal = ({
 
         if (product.category === 'Contact Lenses') {
             const packPrice = getDynamicPackPrice(selectedClPack);
-            const totalBoxes = isSolution
-                ? clRightBoxes
-                : (contactLensPowerOption === 'later' ? clRightBoxes : (clRightEyeSelected ? clRightBoxes : 0) + (clLeftEyeSelected ? clLeftBoxes : 0));
+            const totalBoxes = clRightBoxes;
             
             lensPrice = packPrice * totalBoxes;
             framePrice = 0; // Contact lenses/solutions do not have a separate frame/base price!
@@ -363,7 +361,7 @@ const LensSelectionModal = ({
         if (product.stock !== undefined && product.stock <= 0) return false;
         const isReadingGlasses = product.category === 'Reading Glasses';
         const isContactLens = product.category === 'Contact Lenses';
-        const isSpectacles = ['Spectacles', 'Computer Glasses', 'Kids Collection'].includes(product.category);
+        const isSpectacles = ['Spectacles', 'Computer Glasses', 'Kids Collection', 'Kids Collections'].includes(product.category);
         
         if (isReadingGlasses && (!readingPower.rightPower || (!readingPower.sameForBoth && !readingPower.leftPower))) {
             const { default: toast } = await import('react-hot-toast');
@@ -372,24 +370,29 @@ const LensSelectionModal = ({
         }
 
         if (isSpectacles && spectaclesPowerOption === 'manual') {
-            if (specRightSelected && (prescription.right.sph === 'Select' || !prescription.right.sph)) {
+            if (!userInfo.name || !userInfo.phone) {
+                const { default: toast } = await import('react-hot-toast');
+                toast.error('Please provide name and phone number');
+                return false;
+            }
+            if (prescription.right.sph === 'Select' || !prescription.right.sph) {
                 const { default: toast } = await import('react-hot-toast');
                 toast.error('Please select Spherical power for Right eye');
                 return false;
             }
-            if (specLeftSelected && (prescription.left.sph === 'Select' || !prescription.left.sph)) {
+            if (prescription.left.sph === 'Select' || !prescription.left.sph) {
                 const { default: toast } = await import('react-hot-toast');
                 toast.error('Please select Spherical power for Left eye');
-                return false;
-            }
-            if (!specRightSelected && !specLeftSelected) {
-                const { default: toast } = await import('react-hot-toast');
-                toast.error('Please select at least one eye');
                 return false;
             }
         }
 
         if (isContactLens && !isSolution && contactLensPowerOption === 'manual') {
+            if (!userInfo.name || !userInfo.phone) {
+                const { default: toast } = await import('react-hot-toast');
+                toast.error('Please provide name and phone number');
+                return false;
+            }
             if (clRightEyeSelected && !clRightSph) {
                 const { default: toast } = await import('react-hot-toast');
                 toast.error('Please select Spherical power for Right eye');
@@ -481,7 +484,7 @@ const LensSelectionModal = ({
             productName: product.title,
             productImage: product.mainImage,
             productPrice: product.price,
-            productSize: product.size || 'Medium',
+            productSize: product.size || (isContactLens ? '' : 'Medium'),
             category: product.category,
             specifications: specifications,
             totalPrice: calculateTotalPrice(),
@@ -874,7 +877,7 @@ const LensSelectionModal = ({
                                 </>
                             )}
 
-                            {(product.category === 'Spectacles' || product.category === 'Computer Glasses' || product.category === 'Kids Collection') ? (
+                            {(product.category === 'Spectacles' || product.category === 'Computer Glasses' || product.category === 'Kids Collection' || product.category === 'Kids Collections') ? (
                                 <>
                                     <div className="cl-power-type-container">
                                         <div className="cl-power-desc">
@@ -904,112 +907,100 @@ const LensSelectionModal = ({
                                             </div>
                                         </div>
 
-                                        {spectaclesPowerOption === 'manual' && (
-                                                manualStep === 'table' ? (
-                                                    <div className="prescription-input-area">
-                                                        <div className="prescription-toggle-container">
-                                                            <div className={`p-toggle-item ${prescriptionType === 'Same power for both eyes' ? 'active' : ''}`} onClick={() => handlePrescriptionTypeChange('Same power for both eyes')}>
-                                                                <div className="p-radio-circle"></div>
-                                                                <span>Same power for both eyes</span>
-                                                            </div>
-                                                            <div className={`p-toggle-item ${prescriptionType === 'Different power for each eye' ? 'active' : ''}`} onClick={() => handlePrescriptionTypeChange('Different power for each eye')}>
-                                                                <div className="p-radio-circle"></div>
-                                                                <span>Different power for each eye</span>
-                                                            </div>
-                                                        </div>
+                                         {spectaclesPowerOption === 'manual' && (
+                                            <div className="prescription-input-area" style={{ width: '100%' }}>
+                                                <div className="prescription-toggle-container">
+                                                    <div className={`p-toggle-item ${prescriptionType === 'Same power for both eyes' ? 'active' : ''}`} onClick={() => handlePrescriptionTypeChange('Same power for both eyes')}>
+                                                        <div className="p-radio-circle"></div>
+                                                        <span>Same power for both eyes</span>
+                                                    </div>
+                                                    <div className={`p-toggle-item ${prescriptionType === 'Different power for each eye' ? 'active' : ''}`} onClick={() => handlePrescriptionTypeChange('Different power for each eye')}>
+                                                        <div className="p-radio-circle"></div>
+                                                        <span>Different power for each eye</span>
+                                                    </div>
+                                                </div>
 
-                                                        <h3>Prescription Input Table</h3>
-                                                        <div className="prescription-table-wrapper">
-                                                            <table className="prescription-table">
-                                                                <thead>
-                                                                    <tr><th>Right Eye</th><th>Left Eye</th></tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    <tr>
-                                                                        <td>
-                                                                            <div className="p-row"><span>SPH</span><select value={prescription.right.sph} onChange={(e) => handlePrescriptionChange('right', 'sph', e.target.value)}>{sphValues.map(v => <option key={v} value={v}>{v}</option>)}</select></div>
-                                                                            <div className="p-row"><span>CYL</span><select value={prescription.right.cyl} onChange={(e) => handlePrescriptionChange('right', 'cyl', e.target.value)}>{cylValues.map(v => <option key={v} value={v}>{v}</option>)}</select></div>
-                                                                            <div className="p-row"><span>AXIS</span><input type="text" placeholder="0-180" maxLength="3" value={prescription.right.axis === 'Select' ? '' : prescription.right.axis} onChange={(e) => handlePrescriptionChange('right', 'axis', e.target.value)} /></div>
-                                                                            {(selectedLensType === 'Progressive' || selectedLensType === 'Bifocal') && (
-                                                                                <div className="p-row"><span>ADD</span><input type="text" placeholder="+0.00" maxLength="5" value={prescription.right.add === 'Select' ? '' : prescription.right.add} onChange={(e) => handlePrescriptionChange('right', 'add', e.target.value)} /></div>
-                                                                            )}
-                                                                        </td>
-                                                                        <td>
-                                                                            <div className="p-row"><span>SPH</span><select value={prescription.left.sph} onChange={(e) => handlePrescriptionChange('left', 'sph', e.target.value)}>{sphValues.map(v => <option key={v} value={v}>{v}</option>)}</select></div>
-                                                                            <div className="p-row"><span>CYL</span><select value={prescription.left.cyl} onChange={(e) => handlePrescriptionChange('left', 'cyl', e.target.value)}>{cylValues.map(v => <option key={v} value={v}>{v}</option>)}</select></div>
-                                                                            <div className="p-row"><span>AXIS</span><input type="text" placeholder="0-180" maxLength="3" value={prescription.left.axis === 'Select' ? '' : prescription.left.axis} onChange={(e) => handlePrescriptionChange('left', 'axis', e.target.value)} /></div>
-                                                                            {(selectedLensType === 'Progressive' || selectedLensType === 'Bifocal') && (
-                                                                                <div className="p-row"><span>ADD</span><input type="text" placeholder="+0.00" maxLength="5" value={prescription.left.add === 'Select' ? '' : prescription.left.add} onChange={(e) => handlePrescriptionChange('left', 'add', e.target.value)} /></div>
-                                                                            )}
-                                                                        </td>
-                                                                    </tr>
-                                                                </tbody>
-                                                            </table>
-                                                            <button className="save-btn-green" onClick={handleSavePrescription}>Save</button>
+                                                <h3>Prescription Input Table</h3>
+                                                <div className="prescription-table-wrapper">
+                                                    <table className="prescription-table">
+                                                        <thead>
+                                                            <tr><th>Right Eye</th><th>Left Eye</th></tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>
+                                                                    <div className="p-row"><span>SPH</span><select value={prescription.right.sph} onChange={(e) => handlePrescriptionChange('right', 'sph', e.target.value)}>{sphValues.map(v => <option key={v} value={v}>{v}</option>)}</select></div>
+                                                                    <div className="p-row"><span>CYL</span><select value={prescription.right.cyl} onChange={(e) => handlePrescriptionChange('right', 'cyl', e.target.value)}>{cylValues.map(v => <option key={v} value={v}>{v}</option>)}</select></div>
+                                                                    <div className="p-row"><span>AXIS</span><input type="text" placeholder="0-180" maxLength="3" value={prescription.right.axis === 'Select' ? '' : prescription.right.axis} onChange={(e) => handlePrescriptionChange('right', 'axis', e.target.value)} /></div>
+                                                                    {(selectedLensType === 'Progressive' || selectedLensType === 'Bifocal') && (
+                                                                        <div className="p-row"><span>ADD</span><input type="text" placeholder="+0.00" maxLength="5" value={prescription.right.add === 'Select' ? '' : prescription.right.add} onChange={(e) => handlePrescriptionChange('right', 'add', e.target.value)} /></div>
+                                                                    )}
+                                                                </td>
+                                                                <td>
+                                                                    <div className="p-row"><span>SPH</span><select value={prescription.left.sph} onChange={(e) => handlePrescriptionChange('left', 'sph', e.target.value)}>{sphValues.map(v => <option key={v} value={v}>{v}</option>)}</select></div>
+                                                                    <div className="p-row"><span>CYL</span><select value={prescription.left.cyl} onChange={(e) => handlePrescriptionChange('left', 'cyl', e.target.value)}>{cylValues.map(v => <option key={v} value={v}>{v}</option>)}</select></div>
+                                                                    <div className="p-row"><span>AXIS</span><input type="text" placeholder="0-180" maxLength="3" value={prescription.left.axis === 'Select' ? '' : prescription.left.axis} onChange={(e) => handlePrescriptionChange('left', 'axis', e.target.value)} /></div>
+                                                                    {(selectedLensType === 'Progressive' || selectedLensType === 'Bifocal') && (
+                                                                        <div className="p-row"><span>ADD</span><input type="text" placeholder="+0.00" maxLength="5" value={prescription.left.add === 'Select' ? '' : prescription.left.add} onChange={(e) => handlePrescriptionChange('left', 'add', e.target.value)} /></div>
+                                                                    )}
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+
+                                                <div className="manual-user-details animate-in" style={{ width: '100%', marginTop: '20px', borderTop: '1px solid rgba(0, 0, 0, 0.05)', paddingTop: '15px' }}>
+                                                    <div className="details-header" style={{ marginBottom: '10px', fontSize: '15px', fontWeight: '600' }}>Whose prescription is this</div>
+                                                    <div className="details-form">
+                                                        <div className="detail-input-group" style={{ marginBottom: '10px' }}>
+                                                            <input 
+                                                                type="text" 
+                                                                placeholder="Name *" 
+                                                                value={userInfo.name} 
+                                                                onChange={(e) => setUserInfo({...userInfo, name: e.target.value})} 
+                                                            />
+                                                        </div>
+                                                        <div className="detail-input-group" style={{ marginBottom: '10px' }}>
+                                                            <input 
+                                                                type="text" 
+                                                                placeholder="Phone Number *" 
+                                                                value={userInfo.phone} 
+                                                                onChange={(e) => setUserInfo({...userInfo, phone: e.target.value})} 
+                                                            />
+                                                        </div>
+                                                        <div className="cant-find-power" style={{ marginBottom: '10px' }}>
+                                                            <p style={{ margin: 0, fontSize: '12px' }}>Can't find your power? Chat with us on <a href="https://wa.me/917871333302" target="_blank" rel="noopener noreferrer">WhatsApp</a></p>
+                                                        </div>
+                                                        <div className="prescription-upload-area">
+                                                            <label className="upload-box" style={{ display: 'block', border: '2px dashed #FF0075', borderRadius: '8px', padding: '15px', textAlign: 'center', cursor: 'pointer', background: 'rgba(255, 0, 117, 0.02)' }}>
+                                                                <input 
+                                                                    type="file" 
+                                                                    accept="image/*" 
+                                                                    onChange={(e) => {
+                                                                        const file = e.target.files[0];
+                                                                        if (file) {
+                                                                            const preview = URL.createObjectURL(file);
+                                                                            setUserInfo({
+                                                                                ...userInfo, 
+                                                                                file, 
+                                                                                fileName: file.name,
+                                                                                previewUrl: preview
+                                                                            });
+                                                                        }
+                                                                    }} 
+                                                                    style={{ display: 'none' }}
+                                                                />
+                                                                <div className="upload-content">
+                                                                    <div className="upload-icon" style={{ fontSize: '24px', marginBottom: '5px' }}>📷</div>
+                                                                    <p style={{ margin: 0, fontSize: '13px', color: '#555' }}>
+                                                                        {userInfo.fileName || 'Upload Prescription (Optional)'}
+                                                                    </p>
+                                                                </div>
+                                                            </label>
                                                         </div>
                                                     </div>
-                                                ) : (
-                                                    <div className="manual-user-details animate-in">
-                                                        <div className="details-header">Whose prescription is this</div>
-                                                        <div className="details-form">
-                                                            <div className="detail-input-group">
-                                                                <input 
-                                                                    type="text" 
-                                                                    placeholder="Name *" 
-                                                                    value={userInfo.name} 
-                                                                    onChange={(e) => setUserInfo({...userInfo, name: e.target.value})} 
-                                                                />
-                                                            </div>
-                                                            <div className="detail-input-group">
-                                                                <input 
-                                                                    type="text" 
-                                                                    placeholder="Phone Number *" 
-                                                                    value={userInfo.phone} 
-                                                                    onChange={(e) => setUserInfo({...userInfo, phone: e.target.value})} 
-                                                                />
-                                                            </div>
-                                                            <div className="cant-find-power">
-                                                                <p>Can't find your power? Chat with us on <a href="https://wa.me/917871333302" target="_blank" rel="noopener noreferrer">WhatsApp</a></p>
-                                                            </div>
-                                                            <div className="prescription-upload-area">
-                                                                <label className="upload-box">
-                                                                    <input 
-                                                                        type="file" 
-                                                                        accept="image/*" 
-                                                                        onChange={(e) => {
-                                                                            const file = e.target.files[0];
-                                                                            if (file) {
-                                                                                const preview = URL.createObjectURL(file);
-                                                                                setUserInfo({
-                                                                                    ...userInfo, 
-                                                                                    file, 
-                                                                                    fileName: file.name,
-                                                                                    previewUrl: preview
-                                                                                });
-                                                                            }
-                                                                        }} 
-                                                                    />
-                                                                    <div className="upload-content">
-                                                                        <div className="upload-icon">📷</div>
-                                                                        <p>{userInfo.fileName || 'Upload Prescription (Optional)'}</p>
-                                                                    </div>
-                                                                </label>
-                                                            </div>
-// Hidden Save & Proceed button as requested, now handled by final action buttons
-                                                            {/* <button 
-                                                                className="save-proceed-btn" 
-                                                                onClick={() => handleUserInfoSubmit(() => {
-                                                                    onClose(); 
-                                                                    setDrawerTab('cart'); 
-                                                                    setCartOpen(true);
-                                                                })}
-                                                            >
-                                                                Save & Proceed
-                                                            </button> */}
-                                                            <button className="back-to-table" onClick={() => setManualStep('table')}>Back to Power Table</button>
-                                                        </div>
-                                                    </div>
-                                                    )
+                                                </div>
+                                            </div>
                                         )}
 
                                         {spectaclesPowerOption === 'later' && (
@@ -1067,7 +1058,7 @@ const LensSelectionModal = ({
                                     <ReadingGlassesPowerSelector onPowerSelected={(power) => setReadingPower(power)} />
                                 </div>
                             ) : (
-                                (product.category !== 'Spectacles' && product.category !== 'Computer Glasses' && product.category !== 'Kids Collection') && (
+                                (product.category !== 'Spectacles' && product.category !== 'Computer Glasses' && product.category !== 'Kids Collection' && product.category !== 'Kids Collections') && (
                                         <div className="prescription-section">
                                             <div className="prescription-input-area">
                                                 <h2 className="modal-title-small">Power Options - Eye Selection</h2>
@@ -1208,7 +1199,7 @@ const LensSelectionModal = ({
                                 )}
                                 <div className="p-line">
                                     <span>
-                                        {contactLensPacks.find(p => p.id === selectedClPack)?.name} ({isSolution ? `${clRightBoxes} Qty` : `${contactLensPowerOption === 'later' ? clRightBoxes : (clRightEyeSelected ? clRightBoxes : 0) + (clLeftEyeSelected ? clLeftBoxes : 0)} Boxes`}):
+                                        {contactLensPacks.find(p => p.id === selectedClPack)?.name} ({isSolution ? `${clRightBoxes} Qty` : `${clRightBoxes} Boxes`}):
                                     </span>
                                     <span>{calculatePriceDetails().lensPrice > 0 ? `₹${calculatePriceDetails().lensPrice}` : 'Included'}</span>
                                 </div>

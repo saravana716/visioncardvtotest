@@ -238,7 +238,7 @@ const ProductDetails = () => {
                     discount: discountedProduct.discountLabel || '0% OFF',
                     rating: data.rating || '4.5',
                     ratingCount: data.ratingCount || '0',
-                    size: data.size || 'Medium',
+                    size: data.category === 'Contact Lenses' ? (data.size || '') : (data.size || 'Medium'),
                     // Admin stores a single free-text `color` string; the storefront
                     // renders a `colors` array of { name, hex }. Fall back to the admin
                     // color (usable directly as a CSS color for the swatch) so it isn't
@@ -249,7 +249,7 @@ const ProductDetails = () => {
                             ? [{ name: data.color, hex: data.color }]
                             : [{ name: 'Default', hex: '#000' }]),
                     category: data.category || 'Spectacles',
-                    userSegment: data.category === 'Kids Collection' ? 'Kids' : 'Adults',
+                    userSegment: (data.category === 'Kids Collection' || data.category === 'Kids Collections') ? 'Kids' : 'Adults',
                     // Resolve stock via the shared helper (mirrors admin's
                     // resolveProductStock): missing/blank/invalid → 0 (Out of Stock),
                     // so legacy docs with no stock field can't be oversold.
@@ -497,61 +497,89 @@ const ProductDetails = () => {
     const productStatus = String(product.status || '').trim();
     const isUnavailable = isProductUnavailable(product);
 
-    const renderTechnicalInfo = (viewType) => (
-        <div className={`info-left-col ${viewType === 'desktop' ? 'hide-on-mobile' : 'hide-on-desktop'}`}>
-            {product.technicalSpecs && product.technicalSpecs.length > 0 && (
-                <div className="technical-info-section">
-                    <h2>Technical Information</h2>
-                    <table className="tech-table">
-                        <tbody>
-                            {product.technicalSpecs
-                                .filter(spec => spec.label !== 'Model No.' && spec.value && spec.value !== 'N/A')
-                                .map((spec, idx) => (
-                                    <tr key={idx}>
-                                        <td>{spec.label}</td>
-                                        <td>{spec.value}</td>
-                                    </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
-            
-            {(product.features && (Array.isArray(product.features) ? product.features.length > 0 : product.features.length > 0)) && (
-                <div className="product-features-section">
-                    <h2>Product Features</h2>
-                    <div className="features-list-container">
-                        {(Array.isArray(product.features) ? product.features : product.features.split(/[.,]/)).filter(f => f.trim().length > 0).map((feature, idx) => (
-                            <div key={idx} className="feature-item-row">
-                                <span className="check-icon">✓</span>
-                                <p className="feature-text">{feature.trim()}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
+    const getCategoryDescription = () => {
+        if (!product || !product.category) return null;
+        if (product.category === 'Contact Lenses' && String(product.contactLensSubcategory || '').trim().toLowerCase() === 'solutions') {
+            return {
+                title: 'Bausch + Lomb Biotrue Multi-Purpose Contact Lens Solution',
+                description: 'Bausch + Lomb Biotrue Multi-Purpose Contact Lens Solution is an all-in-one solution that cleans, disinfects, rinses, conditions, and stores soft contact lenses. It helps keep lenses clean, fresh, and comfortable throughout the day.',
+                highlights: [
+                    {
+                        title: 'Highlights',
+                        items: [
+                            'Cleans and disinfects contact lenses',
+                            'Removes dirt and protein deposits',
+                            'Keeps lenses moist and comfortable',
+                            'Suitable for all soft contact lenses, including silicone hydrogel lenses',
+                            'All-in-one solution for daily lens care',
+                            'Helps provide clear and comfortable vision',
+                            'Easy and convenient to use every day'
+                        ]
+                    }
+                ]
+            };
+        }
+        return categoryDescriptions[product.category];
+    };
 
-            {product.category && categoryDescriptions[product.category] && (
-                <div className="category-dynamic-desc">
-                    <h2>{categoryDescriptions[product.category].title}</h2>
-                    <p className="desc-text">{categoryDescriptions[product.category].description}</p>
-                    
-                    <div className="highlights-container">
-                        {categoryDescriptions[product.category].highlights.map((highlightGroup, idx) => (
-                            <div key={idx} className="highlight-group">
-                                <h3>{highlightGroup.title}</h3>
-                                <ul>
-                                    {highlightGroup.items.map((item, itemIdx) => (
-                                        <li key={itemIdx}>{item}</li>
-                                    ))}
-                                </ul>
-                            </div>
-                        ))}
+    const renderTechnicalInfo = (viewType) => {
+        const categoryDesc = getCategoryDescription();
+        return (
+            <div className={`info-left-col ${viewType === 'desktop' ? 'hide-on-mobile' : 'hide-on-desktop'}`}>
+                {product.technicalSpecs && product.technicalSpecs.length > 0 && (
+                    <div className="technical-info-section">
+                        <h2>Technical Information</h2>
+                        <table className="tech-table">
+                            <tbody>
+                                {product.technicalSpecs
+                                    .filter(spec => spec.label !== 'Model No.' && spec.value && spec.value !== 'N/A')
+                                    .map((spec, idx) => (
+                                        <tr key={idx}>
+                                            <td>{spec.label}</td>
+                                            <td>{spec.value}</td>
+                                        </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
-                </div>
-            )}
-        </div>
-    );
+                )}
+                
+                {(product.features && (Array.isArray(product.features) ? product.features.length > 0 : product.features.length > 0)) && (
+                    <div className="product-features-section">
+                        <h2>Product Features</h2>
+                        <div className="features-list-container">
+                            {(Array.isArray(product.features) ? product.features : product.features.split(/[.,]/)).filter(f => f.trim().length > 0).map((feature, idx) => (
+                                <div key={idx} className="feature-item-row">
+                                    <span className="check-icon">✓</span>
+                                    <p className="feature-text">{feature.trim()}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {categoryDesc && (
+                    <div className="category-dynamic-desc">
+                        <h2>{categoryDesc.title}</h2>
+                        <p className="desc-text">{categoryDesc.description}</p>
+                        
+                        <div className="highlights-container">
+                            {categoryDesc.highlights.map((highlightGroup, idx) => (
+                                <div key={idx} className="highlight-group">
+                                    <h3>{highlightGroup.title}</h3>
+                                    <ul>
+                                        {highlightGroup.items.map((item, itemIdx) => (
+                                            <li key={itemIdx}>{item}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
+        );
+    };
 
     return (
         <div className="product-details-page">
@@ -620,7 +648,7 @@ const ProductDetails = () => {
                     <div className="product-info-panel">
 
                         <h1>{product.title}</h1>
-                        <p className="size-info">Size: {product.size}</p>
+                        {product.size && <p className="size-info">Size: {product.size}</p>}
                         <div className="rating-row">
                             <img src={rateimg} alt="stars" />
                             <span>({product.rating}/5)</span>
@@ -639,9 +667,7 @@ const ProductDetails = () => {
                                 ? 'Discontinued'
                                 : isUnavailable
                                     ? 'Out of Stock'
-                                    : product.stock > 5
-                                        ? `In Stock (${product.stock} available)`
-                                        : `Only ${product.stock} left!`}
+                                    : 'In Stock'}
                         </div>
 
 
