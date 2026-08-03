@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../Components/Navbar/Navbar';
 import Footers from '../Components/Footer/Footers';
 import './About.css';
@@ -22,6 +23,7 @@ import {
 } from 'react-icons/fi';
 
 const About = () => {
+    const navigate = useNavigate();
     useEffect(() => {
         const observerOptions = {
             threshold: 0.1,
@@ -245,7 +247,7 @@ const About = () => {
                     <div className="final-cta-block scroll-reveal">
                         <h2 className="cta-final-title">VisionKart – Where Quality Meets Convenience</h2>
                         <p className="cta-final-desc">Crafted for a Superior Way to Shop</p>
-                        <button className="v2-primary-btn">Start Shopping</button>
+                        <button className="v2-primary-btn" onClick={() => navigate('/products')}>Start Shopping</button>
                     </div>
                 </div>
             </section>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import "./ContactLens.css"
 import { getCategoryByName } from '../../services/firestoreService'
 import { useNavigate } from 'react-router-dom'
@@ -7,6 +7,7 @@ const ContactLens = () => {
     const [subcategories, setSubcategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+    const scrollRef = useRef(null);
 
     useEffect(() => {
         const fetchSubcategories = async () => {
@@ -19,6 +20,8 @@ const ContactLens = () => {
         fetchSubcategories();
     }, []);
 
+
+
     if (loading) {
         return <div className='contact' style={{justifyContent: 'center', color: 'white'}}>Loading contact lenses...</div>;
     }
@@ -28,7 +31,7 @@ const ContactLens = () => {
             <div className='discoverleft'>
                 {/* <button onClick={() => navigate('/products?category=Contact Lenses')}>Shop Now</button> */}
             </div>
-            <div className='discoverright'>
+            <div className='discoverright' ref={scrollRef}>
                 {subcategories.map((data, index) => (
                     <div 
                         className='DiscoverCard' 

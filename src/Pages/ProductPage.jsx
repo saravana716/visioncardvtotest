@@ -25,6 +25,7 @@ const categoryImages = {
     'Reading Glasses': bannerSpectacles,
     'Computer Glasses': bannerContact,
     'Kids Collection': bannerKids,
+    'Kids Collections': bannerKids,
     'Contact Lenses': bannerReading
 };
 
@@ -209,7 +210,7 @@ const ProductPage = () => {
         title: "Digital Comfort for",
         subtitle: "Screen Heavy Days",
         desc: "Advanced blue cut lenses to reduce digital eye strain and fatigue."
-    } : category === "Kids Collection" ? {
+    } : (category === "Kids Collection" || category === "Kids Collections") ? {
         title: "Fun & Durable",
         subtitle: "Eyewear for Little Ones",
         desc: "Specialized frames designed for children's active lifestyles and comfort."

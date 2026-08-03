@@ -13,7 +13,7 @@
 }
 
 .contact .discoverleft {
-    flex: 1.6;
+    flex: 1;
     height: 100%;
     display: flex;
     align-items: flex-end;
@@ -42,10 +42,10 @@
 }
 
 .contact .discoverright {
-    flex: 1.2;
+    flex: 1;
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: flex-start;
     gap: 20px;
     overflow-x: auto;
     padding: 10px 0;
@@ -155,16 +155,17 @@
     .contact .discoverright {
         width: 100%;
         margin-left: 0;
-        padding: 0;
+        padding: 10px 0;
         gap: 12px;
         display: flex;
-        justify-content: space-between;
+        justify-content: flex-start;
+        overflow-x: auto;
         box-sizing: border-box;
     }
 
     .contact .DiscoverCard {
-        flex: 1;
-        max-width: calc(50% - 6px);
+        flex-shrink: 0;
+        width: 145px;
         height: 180px;
         padding: 10px;
         border-radius: 12px;
