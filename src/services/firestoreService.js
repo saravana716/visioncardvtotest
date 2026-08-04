@@ -32,7 +32,8 @@ export const getProducts = async (categoryName = null, filters = {}, sortBy = 'l
     let q = query(collection(db, 'products'));
     
     if (categoryName) {
-      q = query(q, where('category', '==', categoryName));
+      const searchCat = categoryName === 'Kids Collection' ? 'Kids Collections' : categoryName;
+      q = query(q, where('category', '==', searchCat));
     }
 
     // Apply additional filters dynamically
@@ -117,7 +118,8 @@ export const getTrendyProducts = async (categoryName = null, limitCount = 8) => 
     let q = query(collection(db, 'products'));
     
     if (categoryName && typeof categoryName === 'string') {
-      q = query(q, where('category', '==', categoryName));
+      const searchCat = categoryName === 'Kids Collection' ? 'Kids Collections' : categoryName;
+      q = query(q, where('category', '==', searchCat));
     }
 
     const querySnapshot = await getDocs(q);
@@ -207,7 +209,8 @@ export const decrementStock = async (productId, quantity) => {
 
 export const getCategoryByName = async (name) => {
   try {
-    const q = query(collection(db, 'categories'), where('name', '==', name));
+    const searchName = name === 'Kids Collection' ? 'Kids Collections' : name;
+    const q = query(collection(db, 'categories'), where('name', '==', searchName));
     const querySnapshot = await getDocs(q);
     if (!querySnapshot.empty) {
       const doc = querySnapshot.docs[0];
@@ -228,7 +231,8 @@ export const getCategoryFilters = async (categoryName) => {
   try {
     let q = query(collection(db, 'products'));
     if (categoryName) {
-      q = query(q, where('category', '==', categoryName));
+      const searchCat = categoryName === 'Kids Collection' ? 'Kids Collections' : categoryName;
+      q = query(q, where('category', '==', searchCat));
     }
     const querySnapshot = await getDocs(q);
     const products = querySnapshot.docs.map(doc => doc.data());

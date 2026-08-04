@@ -34,6 +34,7 @@
     cursor: pointer;
     text-decoration: underline;
     text-underline-offset: 3px;
+    white-space: nowrap; /* Prevent wrapping onto a second line */
 }
 
 /* Override the color specifically to match primary theme */

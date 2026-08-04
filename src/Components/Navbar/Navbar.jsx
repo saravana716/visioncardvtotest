@@ -40,6 +40,7 @@ const Navbar = () => {
         'spectacles': 0,
         'sunglasses': 1,
         'kids collection': 2,
+        'kids collections': 2,
         'computer glasses': 3,
         'reading glasses': 4,
         'contact lenses': 5
@@ -58,7 +59,7 @@ const Navbar = () => {
         setCategories(sortCats(fetchedCategories));
       } else {
         // Fallback to original list with basic structure if Firestore is empty
-        const fallbackNames = ['Spectacles', 'Sunglasses', 'Kids Collection', 'Computer Glasses', 'Reading Glasses', 'Contact Lenses'];
+        const fallbackNames = ['Spectacles', 'Sunglasses', 'Kids Collections', 'Computer Glasses', 'Reading Glasses', 'Contact Lenses'];
         setCategories(fallbackNames.map(name => ({ id: name, name })));
       }
     };
