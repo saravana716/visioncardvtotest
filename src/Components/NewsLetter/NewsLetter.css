@@ -110,11 +110,12 @@
     .newsletter-section {
         background: url('../../assets/mobilea.jpeg') no-repeat center center / cover;
         width: 100%;
-        padding: 60px 20px !important;
+        aspect-ratio: 606 / 1280;
         display: flex;
         align-items: center;
         justify-content: center;
         box-sizing: border-box;
+        padding: 40px 20px !important;
     }
     .newsletter-container {
         display: flex;
@@ -123,6 +124,7 @@
         align-items: center;
         text-align: center;
         box-sizing: border-box;
+        width: 100%;
     }
     .newsletter-content {
         margin-top: 15px;
