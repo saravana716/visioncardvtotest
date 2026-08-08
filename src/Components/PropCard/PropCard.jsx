@@ -3,7 +3,11 @@ import { useNavigate } from 'react-router-dom'
 import { FaRegHeart, FaHeart } from "react-icons/fa";
 import { useWishlist } from '../../context/WishlistContext';
 import { useCart } from '../../context/CartContext';
+import { config } from '../../config';
 import "./PropCard.css"
+
+// Phase 1 is photo-only, so the card badge drops "3D"; it returns in phase 2.
+const TRYON_TAG = config.enable3DTryOn ? '3D Try-On' : 'Try-On';
 
 const PropCard = ({ cardlist }) => {
     const navigate = useNavigate();
@@ -21,7 +25,7 @@ const PropCard = ({ cardlist }) => {
                     onClick={() => navigate(`/product/${data.id}`)}
                 >
                     <div className='propcardimg'>
-                        {data.tryOn && <div className="tryon-tag">3D Try-On</div>}
+                        {data.tryOn && <div className="tryon-tag">{TRYON_TAG}</div>}
                         <div className={`img-wrapper ${data.hoverImg ? 'has-hover' : ''}`}>
                             {data.img ? (
                                 <img

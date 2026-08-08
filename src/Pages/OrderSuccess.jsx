@@ -276,7 +276,7 @@ const OrderSuccess = () => {
                             </div>
 
                             <p className="success-msg">
-                                Thank you for shopping with VisionCart! Your eyewear is being processed
+                                Thank you for shopping with VisionKart! Your eyewear is being processed
                                 and will be shipped shortly. You can now download your official Tax Invoice.
                             </p>
 

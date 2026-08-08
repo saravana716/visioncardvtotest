@@ -208,7 +208,7 @@ const Profile = () => {
                         {userData?.firstName?.[0] || user?.email?.[0] || 'U'}
                     </div>
                     <div className="hero-text">
-                        <h1>{userData ? `${userData.firstName} ${userData.lastName || ''}` : 'VisionCart User'}</h1>
+                        <h1>{userData ? `${userData.firstName} ${userData.lastName || ''}` : 'VisionKart User'}</h1>
                         <p>{userData?.email || user?.email || userData?.phoneNumber || user?.phoneNumber}</p>
                     </div>
                 </div>

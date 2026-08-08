@@ -16,6 +16,11 @@ import { useWishlist } from '../../context/WishlistContext';
 import SideDrawer from '../SideDrawer/SideDrawer';
 import LocationPicker from '../LocationPicker/LocationPicker';
 import { useSiteSettings } from '../../hooks/useSiteSettings';
+import { config } from '../../config';
+
+// Phase 1 ships the 2D photo try-on, so the nav drops the "3D" wording; it
+// returns automatically in phase 2 when config.enable3DTryOn is flipped on.
+const TRYON_LABEL_SHORT = config.enable3DTryOn ? '3D Try-On' : 'Try-On';
 
 const Navbar = () => {
   const siteSettings = useSiteSettings();
@@ -283,7 +288,7 @@ const Navbar = () => {
                     <input type="text" placeholder="Search" readOnly />
                     <IoIosSearch className='mobile-search-icon'/>
                 </div>
-                <button className='mobile-try-on-btn' onClick={() => navigate('/virtual-try-on')}>3D Try-On</button>
+                <button className='mobile-try-on-btn' onClick={() => navigate('/virtual-try-on')}>{TRYON_LABEL_SHORT}</button>
             </div>
         </div>
 

@@ -7,7 +7,7 @@ const Loader = ({ fullPage = false }) => {
         <div className={`vision-loader-container ${fullPage ? 'full-page' : ''}`}>
             <div className="loader-visual">
                 <div className="loader-logo-container">
-                    <img src={logo} alt="VisionCart Logo" className="loader-logo" />
+                    <img src={logo} alt="VisionKart Logo" className="loader-logo" />
                 </div>
             </div>
             <div className="loading-bar-wrapper">

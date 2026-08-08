@@ -51,7 +51,7 @@ const ComingSoon = () => {
             {/* Main Center Content */}
             <div className="cs-content">
                 <div className="cs-logo-container">
-                    <img src={logo} alt="VisionCart Logo" className="cs-logo" />
+                    <img src={logo} alt="VisionKart Logo" className="cs-logo" />
                 </div>
                 
                 <div className="cs-tag-wrapper">

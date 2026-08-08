@@ -1,0 +1,219 @@
+.pto-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+}
+
+.pto-modal {
+    position: relative;
+    width: min(520px, 100%);
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+    padding: 24px;
+    padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+}
+
+.pto-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 38px;
+    height: 38px;
+    border: none;
+    border-radius: 50%;
+    background: #f2f4f7;
+    color: #333;
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.pto-header {
+    text-align: center;
+    margin-bottom: 18px;
+}
+
+.pto-header h3 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: #111;
+}
+
+.pto-frame-name {
+    margin: 4px 0 0;
+    color: #667085;
+    font-size: 0.9rem;
+}
+
+.pto-hint {
+    text-align: center;
+    color: #555;
+    line-height: 1.5;
+    margin: 0 0 20px;
+}
+
+.pto-choose-actions,
+.pto-camera-actions,
+.pto-result-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.pto-btn {
+    flex: 1 1 180px;
+    min-height: 48px;
+    padding: 12px 20px;
+    border-radius: 12px;
+    border: 1px solid #d0d5dd;
+    background: #fff;
+    color: #333;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.pto-btn:hover {
+    background: #f5f7fa;
+}
+
+.pto-btn.primary {
+    background: #00387d;
+    border-color: #00387d;
+    color: #fff;
+}
+
+.pto-btn.primary:hover {
+    background: #002a5d;
+}
+
+.pto-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pto-video {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    border-radius: 14px;
+    background: #000;
+    transform: scaleX(-1); /* mirror the live preview like a selfie camera */
+    margin-bottom: 14px;
+}
+
+.pto-result-holder {
+    margin-bottom: 14px;
+}
+
+.pto-result-canvas {
+    width: 100%;
+    height: auto;
+    border-radius: 14px;
+    display: block;
+}
+
+.pto-adjust {
+    margin-bottom: 14px;
+    padding: 12px 14px;
+    background: #f8f9fb;
+    border: 1px solid #eceef2;
+    border-radius: 12px;
+}
+
+.pto-adjust-title {
+    margin: 0 0 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #344054;
+}
+
+.pto-slider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 6px 0;
+}
+
+.pto-slider > span {
+    flex: 0 0 78px;
+    font-size: 0.82rem;
+    color: #667085;
+}
+
+.pto-slider > input[type='range'] {
+    flex: 1;
+    accent-color: #00387d;
+    min-width: 0;
+}
+
+.pto-reset-link {
+    margin-top: 4px;
+    background: none;
+    border: none;
+    color: #00387d;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 4px 0 0;
+}
+
+.pto-status {
+    text-align: center;
+    padding: 24px 0;
+}
+
+.pto-note {
+    text-align: center;
+    color: #b54708;
+    font-size: 0.85rem;
+    margin: 0 0 14px;
+}
+
+.pto-error {
+    color: #b42318;
+    line-height: 1.5;
+    margin: 0 0 18px;
+}
+
+.pto-spinner {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 14px;
+    border: 3px solid #e4e7ec;
+    border-top-color: #00387d;
+    border-radius: 50%;
+    animation: pto-spin 0.9s linear infinite;
+}
+
+@keyframes pto-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 480px) {
+    .pto-modal {
+        padding: 18px;
+    }
+
+    .pto-btn {
+        flex-basis: 100%;
+    }
+}

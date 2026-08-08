@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import Navbar from '../Components/Navbar/Navbar';
@@ -24,7 +24,11 @@ import { parsePriceToInt } from '../utils/price';
 import { isProductUnavailable, resolveStock } from '../utils/availability';
 import { lookupPincode, getSavedLocation, saveLocation } from '../utils/pincode';
 import { VtoModal } from '@vto/sdk';
-import { getTryOnGlbUrl, isTryOnEligible } from '../utils/tryOnModel';
+import { getTryOnGlbUrl, getTryOnFrameImage, isTryOnEligible } from '../utils/tryOnModel';
+import { config } from '../config';
+// Lazy so the MediaPipe/photo-try-on bundle only downloads when a shopper
+// actually opens it — keeps it out of the base product-page chunk.
+const PhotoTryOn = lazy(() => import('../Components/VTO/PhotoTryOn'));
 
 // Normalize a YouTube URL (watch?v=, youtu.be/, shorts/, embed/, with any extra
 // query params) to a proper /embed/<id> URL. Returns null for anything that
@@ -180,6 +184,7 @@ const ProductDetails = () => {
     const [is360Open, setIs360Open] = useState(false);
     const [isVideoOpen, setIsVideoOpen] = useState(false);
     const [isTryOnOpen, setIsTryOnOpen] = useState(false);
+    const [isPhotoTryOnOpen, setIsPhotoTryOnOpen] = useState(false);
     // Pre-fill from the delivery location the customer already picked in the navbar.
     const [pincode, setPincode] = useState(() => getSavedLocation()?.pincode || '');
     const [pinChecking, setPinChecking] = useState(false);
@@ -673,26 +678,60 @@ const ProductDetails = () => {
 
 
                         {isTryOnEligible(product) && (
-                            <div className="virtual-tryon-banner-premium" onClick={() => setIsTryOnOpen(true)}>
-                                <div className="tryon-content">
-                                    <span className="tryon-badge">LIVE AR</span>
-                                    <h3>3D Virtual Try-On</h3>
-                                    <p>See how they look on your face instantly</p>
+                            <>
+                                {/* Phase 1: the 2D photo try-on is the primary (only) entry.
+                                    The 3D "LIVE AR" banner is gated for phase 2. */}
+                                {config.enable3DTryOn && (
+                                    <div className="virtual-tryon-banner-premium" onClick={() => setIsTryOnOpen(true)}>
+                                        <div className="tryon-content">
+                                            <span className="tryon-badge">LIVE AR</span>
+                                            <h3>3D Virtual Try-On</h3>
+                                            <p>See how they look on your face instantly</p>
+                                        </div>
+                                        <div className="tryon-img">
+                                            <img src="https://images.unsplash.com/photo-1574258495973-f010dfbb5371?w=400" alt="Model AR" />
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* 2D photo try-on — overlays the frame on a selfie or a
+                                    gallery photo (no camera permission needed in gallery mode). */}
+                                <div className="virtual-tryon-banner-premium" onClick={() => setIsPhotoTryOnOpen(true)}>
+                                    <div className="tryon-content">
+                                        <span className="tryon-badge">TRY-ON</span>
+                                        <h3>Virtual Try-On</h3>
+                                        <p>See them on your face — snap a selfie or pick a photo</p>
+                                    </div>
+                                    <div className="tryon-img">
+                                        <img src="https://images.unsplash.com/photo-1574258495973-f010dfbb5371?w=400" alt="Try on" />
+                                    </div>
                                 </div>
-                                <div className="tryon-img">
-                                    <img src="https://images.unsplash.com/photo-1574258495973-f010dfbb5371?w=400" alt="Model AR" />
-                                </div>
-                            </div>
+                            </>
                         )}
 
-                        {/* @vto/sdk try-on modal — renders the product's GLB on the
-                            visitor's face (camera runs only while open). */}
-                        <VtoModal
-                            open={isTryOnOpen}
-                            onClose={() => setIsTryOnOpen(false)}
-                            glbUrl={getTryOnGlbUrl(product)}
-                            name={product?.name || product?.title || 'Virtual Try-On'}
-                        />
+                        {/* @vto/sdk 3D GLB try-on modal — phase 2 only. */}
+                        {config.enable3DTryOn && (
+                            <VtoModal
+                                open={isTryOnOpen}
+                                onClose={() => setIsTryOnOpen(false)}
+                                glbUrl={getTryOnGlbUrl(product)}
+                                name={product?.name || product?.title || 'Virtual Try-On'}
+                            />
+                        )}
+
+                        {/* 2D photo try-on modal — uses the uploaded transparent frame
+                            cutout (falls back to the product photo). Mounted only once
+                            opened so its lazy chunk downloads on demand. */}
+                        {isPhotoTryOnOpen && (
+                            <Suspense fallback={null}>
+                                <PhotoTryOn
+                                    open
+                                    onClose={() => setIsPhotoTryOnOpen(false)}
+                                    frameImage={getTryOnFrameImage(product)}
+                                    name={product?.name || product?.title || 'Virtual Try-On'}
+                                />
+                            </Suspense>
+                        )}
 
                         {product.category !== 'Sunglasses' && (
                             <div className="action-buttons-group">
@@ -758,7 +797,7 @@ const ProductDetails = () => {
                                         <img src="https://cdn-icons-png.flaticon.com/512/679/679821.png" alt="Returns" />
                                     </div>
                                     <div className="badge-text">
-                                        <span>No Question Asked Returns</span>
+                                        <span>No Questions Asked Returns</span>
                                         <p>(Excluding Power lens)</p>
                                     </div>
                                 </div>

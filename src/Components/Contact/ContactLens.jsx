@@ -40,7 +40,7 @@ const ContactLens = () => {
                         onClick={() => navigate(`/products?category=Contact Lenses&subcategory=${encodeURIComponent(data.name)}`)}
                     >
                         <div className='cardimg'>
-                            <img src={data.imageUrl} alt={data.name} />
+                            <img src={data.imageUrl} alt={data.name} loading="lazy" decoding="async" />
                         </div>
                         <button onClick={(e) => {
                             e.stopPropagation();

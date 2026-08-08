@@ -1,6 +1,14 @@
 .virtual-tryon-page {
     background: #fcfcfc;
     min-height: 100vh;
+
+    /* Tunable knobs — change here after seeing it on a real phone, no code hunt.
+       --vto-aspect drives the camera/placeholder box; portrait on phones so a
+       portrait-held face isn't squished into a wide letterbox. The oval size is
+       consumed by VTO.css (.vto-align-oval) and inherited down the DOM tree. */
+    --vto-aspect: 16 / 9;
+    --vto-oval-w: 280px;
+    --vto-oval-h: 380px;
 }
 
 .tryon-hero-premium {
@@ -27,7 +35,7 @@
     border-radius: 20px;
     overflow: hidden;
     box-shadow: 0 20px 50px rgba(0,0,0,0.1);
-    aspect-ratio: 16/9;
+    aspect-ratio: var(--vto-aspect);
 }
 
 .model-base {
@@ -75,7 +83,7 @@
     border-radius: 20px;
     overflow: hidden;
     box-shadow: 0 30px 60px rgba(0,0,0,0.2);
-    aspect-ratio: 16/9;
+    aspect-ratio: var(--vto-aspect);
     background: #000; /* Dark background while camera loads */
 }
 
@@ -294,9 +302,100 @@
 @media (max-width: 992px) {
     .tryon-container-grid {
         grid-template-columns: 1fr;
+        gap: 32px;
     }
-    
+
     .tryon-info-section h1 {
         font-size: 2.5rem;
+    }
+}
+
+/* Phones / small tablets: the camera goes portrait so a portrait-held face
+   fills the frame instead of being letterboxed into a 16:9 strip, and the
+   hero stops eating the screen with desktop-sized padding. */
+@media (max-width: 768px) {
+    .virtual-tryon-page {
+        --vto-aspect: 3 / 4;
+        --vto-oval-w: min(62vw, 240px);
+        --vto-oval-h: min(84vw, 330px);
+    }
+
+    .tryon-hero-premium {
+        padding: 84px 4% 36px;
+    }
+
+    .tryon-container-grid {
+        gap: 24px;
+    }
+
+    .tryon-info-section {
+        text-align: center;
+    }
+
+    .tryon-info-section h1 {
+        font-size: 2rem;
+        margin: 10px 0;
+    }
+
+    .subtitle {
+        font-size: 1rem;
+        margin-bottom: 22px;
+    }
+
+    .selected-product-vto {
+        padding: 20px;
+        margin-bottom: 22px;
+        text-align: left;
+    }
+
+    .vto-product-meta h3 {
+        font-size: 1.4rem;
+    }
+
+    .vto-features-grid {
+        justify-content: center;
+        gap: 20px;
+    }
+
+    .try-spectacles-section-v2 {
+        padding: 48px 4%;
+    }
+
+    .section-header {
+        margin-bottom: 28px;
+    }
+
+    .section-header h2 {
+        font-size: 1.7rem;
+    }
+
+    .vto-products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 16px;
+    }
+
+    .card-img {
+        height: 90px;
+    }
+}
+
+/* Narrow phones: keep the frame-picker to two comfortable columns and let the
+   action buttons stack rather than squeeze. */
+@media (max-width: 480px) {
+    .virtual-tryon-page {
+        --vto-aspect: 4 / 5;
+    }
+
+    .vto-action-btns {
+        flex-direction: column;
+    }
+
+    .vto-products-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .tryon-info-section h1 {
+        font-size: 1.7rem;
     }
 }

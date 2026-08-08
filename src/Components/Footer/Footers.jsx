@@ -107,11 +107,11 @@ const Footers = () => {
                     </span>
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
                         <span>📧</span>
-                        <span onClick={() => window.open('mailto:visionkart.onlinestore@gmail.com')} style={{ cursor: 'pointer' }}>visionkart.onlinestore@gmail.com</span>
+                        <a href="mailto:visionkart.onlinestore@gmail.com" style={{ color: 'inherit', textDecoration: 'none' }}>visionkart.onlinestore@gmail.com</a>
                     </span>
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
                         <span>🌐</span>
-                        <span onClick={() => window.open('https://visionkart.online', '_blank')} style={{ cursor: 'pointer' }}>visionkart.online</span>
+                        <a href="https://visionkart.online" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>visionkart.online</a>
                     </span>
                 </div>
             </div>

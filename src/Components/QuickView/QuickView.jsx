@@ -2,6 +2,7 @@ import React from 'react';
 import { IoCloseOutline, IoCartOutline, IoEyeOutline } from "react-icons/io5";
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
+import { config } from '../../config';
 import './QuickView.css';
 
 const QuickView = ({ product, isOpen, onClose }) => {
@@ -35,7 +36,7 @@ const QuickView = ({ product, isOpen, onClose }) => {
                     </div>
                     
                     <div className="quickview-right">
-                        <span className="qv-brand">VisionCart Premium</span>
+                        <span className="qv-brand">VisionKart Premium</span>
                         <h2>{product.title}</h2>
                         
                         <div className="qv-rating">
@@ -51,7 +52,7 @@ const QuickView = ({ product, isOpen, onClose }) => {
                         <div className="qv-features">
                             <div className="qv-feat">
                                 <span className="icon">✓</span>
-                                <span>3D Virtual Try-On Available</span>
+                                <span>{config.enable3DTryOn ? '3D Virtual Try-On Available' : 'Virtual Try-On Available'}</span>
                             </div>
                             <div className="qv-feat">
                                 <span className="icon">✓</span>

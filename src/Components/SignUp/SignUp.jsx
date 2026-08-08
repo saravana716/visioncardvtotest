@@ -89,7 +89,7 @@ const SignUp = () => {
           id="signupFirstName"
           type="text"
           name="firstName"
-          placeholder='Enter Your FirstName'
+          placeholder='Enter Your First Name'
           value={formData.firstName}
           onChange={handleChange}
           required
@@ -101,7 +101,7 @@ const SignUp = () => {
           id="signupLastName"
           type="text"
           name="lastName"
-          placeholder='Enter Your LastName'
+          placeholder='Enter Your Last Name'
           value={formData.lastName}
           onChange={handleChange}
         />

@@ -83,7 +83,7 @@ const MobileCategories = () => {
                 onClick={() => handleItemClick(section.categoryName, item.filter)}
               >
                 <div className="mobile-category-item-image-wrapper">
-                  <img src={item.image} alt={item.name} className="mobile-category-item-image" />
+                  <img src={item.image} alt={item.name} className="mobile-category-item-image" loading="lazy" decoding="async" />
                 </div>
                 <span className="mobile-category-item-name">{item.name}</span>
               </div>
@@ -111,7 +111,7 @@ const MobileCategories = () => {
               onClick={() => handleItemClick('Contact Lenses', item.filter)}
             >
               <div className="mobile-category-item-image-wrapper">
-                <img src={item.image} alt={item.name} className="mobile-category-item-image" />
+                <img src={item.image} alt={item.name} className="mobile-category-item-image" loading="lazy" decoding="async" />
               </div>
               <span className="mobile-category-item-name">{item.name}</span>
             </div>

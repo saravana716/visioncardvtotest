@@ -395,6 +395,27 @@
     box-shadow: 0 10px 30px rgba(0, 31, 84, 0.15);
 }
 
+/* Secondary 2D photo try-on entry, sits just under the 3D banner. */
+.photo-tryon-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: -14px 0 22px;
+    background: none;
+    border: none;
+    padding: 4px 2px;
+    color: #00387d;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.photo-tryon-link:hover {
+    color: #001f54;
+}
+
 .virtual-tryon-banner-premium::before {
     content: '';
     position: absolute;

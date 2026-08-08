@@ -20,5 +20,10 @@ export const config = {
     contactEmail: 'visionkart.onlinestore@gmail.com',
 
     // Production Payment Backend URL for CCAvenue
-    paymentBackendUrl: 'https://visioncardbackend.onrender.com'
+    paymentBackendUrl: 'https://visioncardbackend.onrender.com',
+
+    // Phase 1 ships the 2D photo try-on only. The 3D GLB modal and the
+    // live-camera AR ("3D face tracking") are planned for phase 2 — flip this to
+    // true to re-enable both everywhere.
+    enable3DTryOn: false,
 };

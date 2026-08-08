@@ -232,8 +232,24 @@ const VTOCanvas = ({ frameImage, uploadedImage }) => {
         if (uploadedImage) return;
         try {
             stopStream(); // release any previous stream before opening a new one
+            // Request a stream whose aspect matches the CSS box for this
+            // viewport, so `object-fit: cover` crops as little as possible. The
+            // breakpoints and ratios mirror --vto-aspect in VirtualTryOn.css
+            // (3/4 at <=768px, 4/5 at <=480px); desktop stays wide 16/9.
+            // aspectRatio is width/height, so a portrait box is < 1. We drive the
+            // stream with aspectRatio + a width hint and let height follow, rather
+            // than pinning width AND height to a contradictory pair.
+            const mq = (q) => typeof window !== 'undefined' && window.matchMedia && window.matchMedia(q).matches;
+            let videoConstraints;
+            if (mq('(max-width: 480px)')) {
+                videoConstraints = { facingMode: cameraFacing, aspectRatio: { ideal: 4 / 5 }, width: { ideal: 720 } };
+            } else if (mq('(max-width: 768px)')) {
+                videoConstraints = { facingMode: cameraFacing, aspectRatio: { ideal: 3 / 4 }, width: { ideal: 720 } };
+            } else {
+                videoConstraints = { facingMode: cameraFacing, aspectRatio: { ideal: 16 / 9 }, width: { ideal: 1280 } };
+            }
             const newStream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: cameraFacing, width: { ideal: 1280 }, height: { ideal: 720 } }
+                video: videoConstraints
             });
             streamRef.current = newStream;
             if (videoRef.current) videoRef.current.srcObject = newStream;
@@ -328,12 +344,12 @@ const VTOCanvas = ({ frameImage, uploadedImage }) => {
             {/* 2. LENSKART ALIGNMENT STAGE */}
             {vtoStage === 'align' && (
                 <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.3)' }}>
-                    <div style={{ position: 'absolute', top: '20px', color: '#fff', textAlign: 'center', padding: '0 20px', fontWeight: '500', fontSize: '1.1rem', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
-                        Face a light source, align your face, take off your glasses,<br/>and tuck your hair behind your ears
+                    <div className="vto-align-hint">
+                        Face a light source, align your face, take off your glasses, and tuck your hair behind your ears
                     </div>
-                    {/* The Dotted Green Oval */}
-                    <div style={{ width: '280px', height: '380px', border: '3px dashed #00ffcc', borderRadius: '50%', boxShadow: '0 0 0 9999px rgba(0,0,0,0.5)' }}></div>
-                    <button onClick={handleTakePhoto} style={{ position: 'absolute', bottom: '40px', background: '#fff', color: '#000', padding: '12px 40px', borderRadius: '50px', border: 'none', fontWeight: 'bold', cursor: 'pointer', fontSize: '1rem', boxShadow: '0 10px 20px rgba(0,0,0,0.3)' }}>
+                    {/* The Dotted Green Oval — sized responsively via CSS variables */}
+                    <div className="vto-align-oval"></div>
+                    <button onClick={handleTakePhoto} style={{ position: 'absolute', bottom: '32px', marginBottom: 'env(safe-area-inset-bottom, 0px)', background: '#fff', color: '#000', padding: '12px 40px', borderRadius: '50px', border: 'none', fontWeight: 'bold', cursor: 'pointer', fontSize: '1rem', boxShadow: '0 10px 20px rgba(0,0,0,0.3)' }}>
                         Take Photo
                     </button>
                 </div>
@@ -342,7 +358,7 @@ const VTOCanvas = ({ frameImage, uploadedImage }) => {
             {/* 3. LENSKART SUCCESS STAGE */}
             {vtoStage === 'success' && (
                 <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 15, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(5px)' }}>
-                    <div style={{ background: '#fff', padding: '40px', borderRadius: '20px', textAlign: 'center', maxWidth: '350px', boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }}>
+                    <div className="vto-success-modal">
                         <div style={{ width: '80px', height: '80px', borderRadius: '50%', overflow: 'hidden', margin: '0 auto 20px', border: '3px solid #00387D' }}>
                              <img src={capturedImage || uploadedImage || 'https://via.placeholder.com/150'} alt="User" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         </div>
@@ -374,7 +390,7 @@ const VTOCanvas = ({ frameImage, uploadedImage }) => {
                         </Canvas>
                     </CanvasErrorBoundary>
                     
-                    <div className="vto-controls" style={{ position: 'absolute', bottom: '20px', left: '0', width: '100%', display: 'flex', justifyContent: 'center', gap: '15px', zIndex: 10 }}>
+                    <div className="vto-ar-controls">
                         <button onClick={takeScreenshot} style={{ background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.3)', color: '#fff', padding: '10px 20px', borderRadius: '50px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
                             <MdCameraAlt /> Capture
                         </button>

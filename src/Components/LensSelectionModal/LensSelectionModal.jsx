@@ -428,10 +428,12 @@ const LensSelectionModal = ({
                     { label: 'Pack Type', value: pack?.name || 'Standard' }
                 );
             } else {
+                // One "total boxes" quantity is selected and charged — record it
+                // once. Splitting it per eye doubled the quantity on the order
+                // (2 total read as R:2 + L:2 = 4) and misled fulfillment.
                 specifications.push(
                     { label: 'Lens Type', value: 'Contact Lens' },
-                    { label: 'Box Qty (R)', value: clRightEyeSelected ? clRightBoxes.toString() : '0' },
-                    { label: 'Box Qty (L)', value: clLeftEyeSelected ? clLeftBoxes.toString() : '0' },
+                    { label: 'Total Box Qty', value: clRightBoxes.toString() },
                     { label: 'Pack Type', value: pack?.name || 'Standard' }
                 );
             }
@@ -510,8 +512,9 @@ const LensSelectionModal = ({
                 leftSelected: clLeftEyeSelected,
                 rightPower: clRightSph || null,
                 leftPower: clLeftSph || null,
-                rightBoxes: clRightBoxes,
-                leftBoxes: clLeftBoxes,
+                // A single shared "total boxes" quantity is selected and charged;
+                // storing it per-eye doubled the recorded quantity.
+                totalBoxes: clRightBoxes,
                 totalBoxesLater: contactLensPowerOption === 'later' ? clRightBoxes : null,
                 pack: contactLensPacks.find(p => p.id === selectedClPack),
                 userInfo: (contactLensPowerOption === 'manual') ? {
@@ -668,11 +671,7 @@ const LensSelectionModal = ({
                                             <select 
                                                 className="cl-select-premium cl-select" 
                                                 value={clRightBoxes} 
-                                                onChange={e => {
-                                                    const val = parseInt(e.target.value);
-                                                    setClRightBoxes(val);
-                                                    setClLeftBoxes(val);
-                                                }}
+                                                onChange={e => setClRightBoxes(parseInt(e.target.value))}
                                                 style={{ paddingRight: '2.5rem' }}
                                             >
                                                 {[1,2,3,4,5,6,7,8,9,10].map(n => <option key={n} value={n}>{n}</option>)}
@@ -824,15 +823,20 @@ const LensSelectionModal = ({
                                                                     onChange={(e) => {
                                                                         const file = e.target.files[0];
                                                                         if (file) {
+                                                                            // Release the previous preview blob before replacing it,
+                                                                            // or re-picking files leaks object URLs for the session.
+                                                                            if (userInfo.previewUrl?.startsWith('blob:')) {
+                                                                                URL.revokeObjectURL(userInfo.previewUrl);
+                                                                            }
                                                                             const preview = URL.createObjectURL(file);
                                                                             setUserInfo({
-                                                                                ...userInfo, 
-                                                                                file, 
+                                                                                ...userInfo,
+                                                                                file,
                                                                                 fileName: file.name,
                                                                                 previewUrl: preview
                                                                             });
                                                                         }
-                                                                    }} 
+                                                                    }}
                                                                     style={{ display: 'none' }}
                                                                 />
                                                                 <div className="upload-content">
@@ -979,15 +983,20 @@ const LensSelectionModal = ({
                                                                     onChange={(e) => {
                                                                         const file = e.target.files[0];
                                                                         if (file) {
+                                                                            // Release the previous preview blob before replacing it,
+                                                                            // or re-picking files leaks object URLs for the session.
+                                                                            if (userInfo.previewUrl?.startsWith('blob:')) {
+                                                                                URL.revokeObjectURL(userInfo.previewUrl);
+                                                                            }
                                                                             const preview = URL.createObjectURL(file);
                                                                             setUserInfo({
-                                                                                ...userInfo, 
-                                                                                file, 
+                                                                                ...userInfo,
+                                                                                file,
                                                                                 fileName: file.name,
                                                                                 previewUrl: preview
                                                                             });
                                                                         }
-                                                                    }} 
+                                                                    }}
                                                                     style={{ display: 'none' }}
                                                                 />
                                                                 <div className="upload-content">

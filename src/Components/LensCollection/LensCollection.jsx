@@ -28,7 +28,7 @@ const LensCollection = () => {
     <div className="lens-collection-container scroll-reveal">
       <div className="lens-header">
         <h2>Lenses For Your Lifestyle</h2>
-        <p>Explore our wide collection of high-quality lenses tailored perfectly for your lifestyle and vision zero compromises.</p>
+        <p>Explore our wide collection of high-quality lenses tailored perfectly for your lifestyle and vision, with zero compromises.</p>
       </div>
 
       <div className="carousel-viewport">
