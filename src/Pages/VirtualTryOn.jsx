@@ -13,6 +13,7 @@ import colorimg from '../assets/color.png';
 import './VirtualTryOn.css';
 import Loader from '../Components/Loader/Loader';
 import { MdCameraAlt, MdPhotoLibrary, Md3dRotation, MdImage } from 'react-icons/md';
+import { PLACEHOLDER_IMG } from '../utils/placeholderImage';
 
 const VirtualTryOn = () => {
     const location = useLocation();
@@ -44,7 +45,7 @@ const VirtualTryOn = () => {
                     price: p.displayPrice,
                     mrpprice: p.discountLabel ? p.originalPrice : null,
                     discount: p.discountLabel,
-                    img: (p.photos && p.photos.length > 0) ? p.photos[0] : (p.mainImage || 'https://via.placeholder.com/400?text=No+Image'),
+                    img: (p.photos && p.photos.length > 0) ? p.photos[0] : (p.mainImage || PLACEHOLDER_IMG),
                     // Dedicated transparent cutout when available, else the photo.
                     tryOnImg: getTryOnFrameImage(p),
                     rating: rateimg,
@@ -64,7 +65,7 @@ const VirtualTryOn = () => {
                         setSelectedProduct({
                             ...pp,
                             price: pp.displayPrice,
-                            vtoImg: getTryOnFrameImage(pp) || ((pp.photos && pp.photos.length > 0) ? pp.photos[0] : (pp.mainImage || 'https://via.placeholder.com/400?text=No+Image'))
+                            vtoImg: getTryOnFrameImage(pp) || ((pp.photos && pp.photos.length > 0) ? pp.photos[0] : (pp.mainImage || PLACEHOLDER_IMG))
                         });
                         setVtoActive(true);
                     }

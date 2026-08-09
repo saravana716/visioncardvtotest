@@ -90,6 +90,20 @@ const Checkout = () => {
         };
     }, []);
 
+    // Wake the payment backend as soon as checkout opens: the free-tier host
+    // spins down when idle, and without this the first customer's "Pay" click
+    // would absorb the ~50s cold start (or a 502) on the money path.
+    useEffect(() => {
+        // Same base-URL fallback as the create-order call, so the ping warms
+        // the server the order will actually hit.
+        const apiBase = config.paymentBackendUrl || "https://www.visionkart.online";
+        try {
+            fetch(`${apiBase}/health`).catch(() => {});
+        } catch {
+            // best-effort only
+        }
+    }, []);
+
     // Centralised cleanup for the timers and the hidden CCAvenue form so any
     // unmount (navigating away, redirect, error route) doesn't leak.
     useEffect(() => {
@@ -461,11 +475,26 @@ const Checkout = () => {
                 }
             };
 
-            const response = await fetch(`${apiBase}/create-order`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
+            // Generous timeout so a cold-starting backend still makes it, but
+            // the customer is never left on "Processing…" forever.
+            const abort = new AbortController();
+            const timeoutId = setTimeout(() => abort.abort(), 75000);
+            let response;
+            try {
+                response = await fetch(`${apiBase}/create-order`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                    signal: abort.signal
+                });
+            } catch (err) {
+                if (err?.name === 'AbortError') {
+                    throw new Error("The payment server is taking too long to respond. Please try again in a moment — your cart is unchanged.");
+                }
+                throw err;
+            } finally {
+                clearTimeout(timeoutId);
+            }
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));

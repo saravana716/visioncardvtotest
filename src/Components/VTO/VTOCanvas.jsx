@@ -6,6 +6,7 @@ import { FaceLandmarker, FilesetResolver } from '@mediapipe/tasks-vision';
 import { MdVideocamOff, MdRefresh, MdCameraAlt, MdSwitchVideo, MdFace } from 'react-icons/md';
 import { IoMdInformationCircleOutline } from 'react-icons/io';
 import './VTO.css';
+import { PLACEHOLDER_IMG } from '../../utils/placeholderImage';
 
 
 const MODEL_URL = "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task";
@@ -360,7 +361,7 @@ const VTOCanvas = ({ frameImage, uploadedImage }) => {
                 <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 15, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(5px)' }}>
                     <div className="vto-success-modal">
                         <div style={{ width: '80px', height: '80px', borderRadius: '50%', overflow: 'hidden', margin: '0 auto 20px', border: '3px solid #00387D' }}>
-                             <img src={capturedImage || uploadedImage || 'https://via.placeholder.com/150'} alt="User" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                             <img src={capturedImage || uploadedImage || PLACEHOLDER_IMG} alt="User" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         </div>
                         <h3 style={{ color: '#000', marginBottom: '10px' }}>Your 3D has been successfully created!</h3>
                         <button onClick={() => setVtoStage('active')} style={{ width: '100%', background: '#00387D', color: '#fff', padding: '15px', borderRadius: '10px', border: 'none', fontWeight: 'bold', cursor: 'pointer', marginTop: '20px' }}>

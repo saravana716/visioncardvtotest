@@ -6,7 +6,7 @@
     justify-content: space-between;
     padding: 40px 60px;
     color: white;
-    background: url('../../assets/lens12.png') no-repeat left center / cover;
+    background: url('../../assets/lens12.webp') no-repeat left center / cover;
     gap: 40px;
     box-sizing: border-box;
     border-radius: 24px;
@@ -129,8 +129,8 @@
     .contact .discoverleft {
         position: relative;
         width: 100%;
-        aspect-ratio: 2128/739; /* Perfect aspect ratio matching lens12.png resolution */
-        background: url('../../assets/lens12.png') no-repeat center center / cover;
+        aspect-ratio: 2128/739; /* Perfect aspect ratio matching lens12.webp resolution */
+        background: url('../../assets/lens12.webp') no-repeat center center / cover;
         border-radius: 12px;
         overflow: hidden;
         box-sizing: border-box;

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { useNavigate } from 'react-router-dom';
 import { FaPhoneAlt } from 'react-icons/fa';
 import './LensSelectionModal.css';
 import ReadingGlassesPowerSelector from '../ReadingGlassesPowerSelector/ReadingGlassesPowerSelector';
@@ -14,24 +13,13 @@ const LensSelectionModal = ({
     onClose, 
     product, 
     lensEnhancements, 
-    addItemToCart, 
     setCartOpen, 
     setDrawerTab,
-    onSave,
-    productFor
+    onSave
 }) => {
-    const navigate = useNavigate();
-
     // Selection States
     const [selectedLensType, setSelectedLensType] = useState('Single Vision');
-    const [selectedPackage, setSelectedPackage] = useState('Silver Pack');
     const [selectedUsage, setSelectedUsage] = useState('Everyday');
-
-    const lensPackages = [
-        { id: 'Silver Pack', name: 'Silver Pack', price: 490, features: 'Anti-Glare + Scratch Resistant', description: 'Clear vision for everyday use', color: '#B0B0B0' },
-        { id: 'Gold Pack', name: 'Gold Pack', price: 990, features: 'UV Protection + Thinner Lenses', description: 'Best for outdoor & long wear', recommended: true, color: '#FFD700' },
-        { id: 'Platinum Pack', name: 'Platinum Pack', price: 1490, features: 'Blue Block + Super Hydrophobic', description: 'Superior digital protection', color: '#E5E4E2' }
-    ];
 
     // Contact Lenses States
     const [contactLensPowerOption, setContactLensPowerOption] = useState('later');
@@ -40,7 +28,6 @@ const LensSelectionModal = ({
     const [clRightSph, setClRightSph] = useState('');
     const [clLeftSph, setClLeftSph] = useState('');
     const [clRightBoxes, setClRightBoxes] = useState(1);
-    const [clLeftBoxes, setClLeftBoxes] = useState(1);
     const [showPowerSelectorModal, setShowPowerSelectorModal] = useState(null);
     const [clPowerTab, setClPowerTab] = useState('negative');
 
@@ -236,8 +223,6 @@ const LensSelectionModal = ({
         '0.00',
         ...Array.from({ length: 24 }, (_, i) => `+${(0.25 + i * 0.25).toFixed(2)}`)
     ];
-    const axisValues = ['Select', ...Array.from({ length: 181 }, (_, i) => i.toString())];
-    const addValues = ['Select', ...Array.from({ length: 12 }, (_, i) => `+${(0.75 + i * 0.25).toFixed(2)}`)];
 
     const [prescriptionType, setPrescriptionType] = useState('Same power for both eyes');
     const [selectedEnhancements, setSelectedEnhancements] = useState([]);

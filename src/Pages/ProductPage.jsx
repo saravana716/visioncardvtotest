@@ -18,6 +18,7 @@ import bannerComputer from '../assets/categoryimage/4.png';
 import bannerKids from '../assets/categoryimage/5.png';
 import bannerContact from '../assets/categoryimage/6.png';
 import productBanner from '../assets/productbanner.png';
+import { PLACEHOLDER_IMG } from '../utils/placeholderImage';
 
 const categoryImages = {
     'Spectacles': bannerComputer,
@@ -192,7 +193,7 @@ const ProductPage = () => {
             // Strikethrough MRP only when there is an actual discount.
             mrpprice: p.discountLabel ? p.originalPrice : null,
             discount: p.discountLabel,
-            img: (p.photos && p.photos.length > 0) ? p.photos[0] : (p.mainImage || 'https://via.placeholder.com/400?text=No+Image'),
+            img: (p.photos && p.photos.length > 0) ? p.photos[0] : (p.mainImage || PLACEHOLDER_IMG),
             hoverImg: (p.photos && p.photos.length > 1) ? p.photos[1] : null,
             rating: rateimg,
             color: colorimg,

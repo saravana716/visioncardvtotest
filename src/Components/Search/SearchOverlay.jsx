@@ -4,6 +4,7 @@ import { FaSearch, FaTimes, FaArrowRight } from 'react-icons/fa';
 import { getProducts } from '../../services/firestoreService';
 import { formatRupees } from '../../utils/price';
 import './SearchOverlay.css';
+import { PLACEHOLDER_IMG } from '../../utils/placeholderImage';
 
 const POPULAR_SEARCHES = ['Blue Block', 'Wayfarer', 'Ray-Ban', 'Computer Glasses', 'Round'];
 
@@ -125,7 +126,7 @@ const SearchOverlay = ({ isOpen, onClose }) => {
                                 // number — the old mainImage/title/price fields were
                                 // blank. Prefer the offer price when present.
                                 const image = p.photos?.[0] || p.mainImage || p.img
-                                    || 'https://via.placeholder.com/80?text=No+Image';
+                                    || PLACEHOLDER_IMG;
                                 const displayName = p.name || p.title || 'Product';
                                 const priceVal = (p.offerPrice != null && p.offerPrice !== '')
                                     ? p.offerPrice

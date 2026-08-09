@@ -33,9 +33,10 @@ const FRAME_WIDTH_TO_PD = 2.0;
 const WHITE_CUTOFF = 232;
 const WHITE_FEATHER = 16;
 // Nudge the frame vertically from the eye line, in multiples of the PD
-// (negative = up). Glasses sit a touch above the pupil centre, and the user can
-// fine-tune from here with the on-screen controls.
-const FRAME_VERTICAL_OFFSET_TO_PD = -0.05;
+// (negative = up). Placement anchors the frame's LENS LINE to the pupils
+// (see prepareFrame's lensFrac), so no static offset is needed; the user can
+// fine-tune with the on-screen controls.
+const FRAME_VERTICAL_OFFSET_TO_PD = 0;
 
 // MediaPipe iris landmark indices (478-point model); fall back to the outer eye
 // corners if iris points are unavailable.
@@ -130,6 +131,9 @@ function prepareFrame(frameImg) {
     }
 
     let minX = c.width, minY = c.height, maxX = 0, maxY = 0, found = false;
+    // Per-row count of visible pixels, filled during the same pass as the
+    // keying/bbox scan so the image is only traversed once.
+    const rowWidths = new Uint32Array(c.height);
     for (let y = 0; y < c.height; y++) {
         for (let x = 0; x < c.width; x++) {
             const i = (y * c.width + x) * 4;
@@ -146,6 +150,7 @@ function prepareFrame(frameImg) {
             }
             if (px[i + 3] > 12) {
                 found = true;
+                rowWidths[y]++;
                 if (x < minX) minX = x;
                 if (x > maxX) maxX = x;
                 if (y < minY) minY = y;
@@ -156,8 +161,28 @@ function prepareFrame(frameImg) {
     // Only write back when we actually keyed pixels (opaque source).
     if (!hasAlpha) cx.putImageData(data, 0, 0);
 
-    if (!found) return { canvas: c, sx: 0, sy: 0, sw: c.width, sh: c.height };
-    return { canvas: c, sx: minX, sy: minY, sw: maxX - minX + 1, sh: maxY - minY + 1 };
+    if (!found) return { canvas: c, sx: 0, sy: 0, sw: c.width, sh: c.height, lensFrac: 0.5 };
+
+    const bw = maxX - minX + 1;
+    const bh = maxY - minY + 1;
+
+    // Locate the LENS LINE inside the cutout: the widest horizontal band of a
+    // glasses image is always the lens row (temples/nose pads are narrower).
+    // Anchoring this row — rather than the bounding-box centre — to the eyes
+    // keeps placement correct even when the asset includes temple arms above
+    // or below the lenses, which otherwise skew the box and push the frame
+    // off the eye line.
+    let maxRow = 0;
+    for (let y = minY; y <= maxY; y++) {
+        if (rowWidths[y] > maxRow) maxRow = rowWidths[y];
+    }
+    let sumY = 0, n = 0;
+    for (let y = minY; y <= maxY; y++) {
+        if (rowWidths[y] >= maxRow * 0.8) { sumY += y - minY; n++; }
+    }
+    const lensFrac = n > 0 ? (sumY / n + 0.5) / bh : 0.5;
+
+    return { canvas: c, sx: minX, sy: minY, sw: bw, sh: bh, lensFrac };
 }
 
 function loadImage(src, crossOrigin) {
@@ -249,6 +274,9 @@ async function composeTryOn(photoSrc, frameSrc) {
         h: frameH,
         angle,
         pd,
+        // Fraction of the frame's height where the lens line sits (0.5 when
+        // pixels aren't readable) — the draw anchors this row to the eye line.
+        lensFrac: prepared ? prepared.lensFrac : 0.5,
     };
 
     // Probe whether the result can be exported (a cross-origin frame without
@@ -273,7 +301,7 @@ const DEFAULT_ADJUST = { scale: 1, vFrac: 0, hFrac: 0 };
  * multiplies the frame size. Returns a fresh canvas at the photo's resolution.
  */
 function renderComposite({ photo, frame, place }, adjust) {
-    const { cx, cy, w, h, angle, pd } = place;
+    const { cx, cy, w, h, angle, pd, lensFrac = 0.5 } = place;
     const canvas = document.createElement('canvas');
     canvas.width = photo.naturalWidth;
     canvas.height = photo.naturalHeight;
@@ -283,12 +311,18 @@ function renderComposite({ photo, frame, place }, adjust) {
     const dw = w * adjust.scale;
     const dh = h * adjust.scale;
     ctx.save();
-    ctx.translate(cx + adjust.hFrac * pd, cy + adjust.vFrac * pd);
+    ctx.translate(cx, cy);
     ctx.rotate(angle);
+    // Manual nudges are applied AFTER the rotation so the Up/Down and
+    // Left/Right sliders move along the face's own axes — on a tilted head a
+    // vertical nudge stays perpendicular to the eye line instead of drifting
+    // diagonally across it.
+    ctx.translate(adjust.hFrac * pd, adjust.vFrac * pd);
+    // Anchor the frame's lens line (not its box centre) on the eye line.
     if (frame.canvas) {
-        ctx.drawImage(frame.canvas, frame.sx, frame.sy, frame.sw, frame.sh, -dw / 2, -dh / 2, dw, dh);
+        ctx.drawImage(frame.canvas, frame.sx, frame.sy, frame.sw, frame.sh, -dw / 2, -dh * lensFrac, dw, dh);
     } else {
-        ctx.drawImage(frame.img, -dw / 2, -dh / 2, dw, dh);
+        ctx.drawImage(frame.img, -dw / 2, -dh * lensFrac, dw, dh);
     }
     ctx.restore();
     return canvas;
@@ -418,8 +452,13 @@ const PhotoTryOn = ({ open, onClose, frameImage, name }) => {
         setStage('camera');
         try {
             stopStream();
+            // Portrait capture on phones (users hold them upright); landscape on
+            // wider screens so the desktop modal doesn't tower past the fold.
+            const wide = window.matchMedia('(min-width: 768px)').matches;
             const stream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: 'user', width: { ideal: 1080 }, height: { ideal: 1440 } },
+                video: wide
+                    ? { facingMode: 'user', width: { ideal: 1440 }, height: { ideal: 1080 } }
+                    : { facingMode: 'user', width: { ideal: 1080 }, height: { ideal: 1440 } },
             });
             streamRef.current = stream;
             if (videoRef.current) videoRef.current.srcObject = stream;

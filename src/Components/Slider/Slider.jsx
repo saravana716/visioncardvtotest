@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import banner1 from "../../assets/2 png.png";
-import banner2 from "../../assets/3png.png";
-import banner3 from "../../assets/4png.png";
+import banner1 from "../../assets/2 png.webp";
+import banner2 from "../../assets/3png.webp";
+import banner3 from "../../assets/4png.webp";
 import { config } from '../../config';
 import "./Slider.css";
 

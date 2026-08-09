@@ -26,6 +26,7 @@ import { lookupPincode, getSavedLocation, saveLocation } from '../utils/pincode'
 import { VtoModal } from '@vto/sdk';
 import { getTryOnGlbUrl, getTryOnFrameImage, isTryOnEligible } from '../utils/tryOnModel';
 import { config } from '../config';
+import { PLACEHOLDER_IMG } from '../utils/placeholderImage';
 // Lazy so the MediaPipe/photo-try-on bundle only downloads when a shopper
 // actually opens it — keeps it out of the base product-page chunk.
 const PhotoTryOn = lazy(() => import('../Components/VTO/PhotoTryOn'));
@@ -234,8 +235,8 @@ const ProductDetails = () => {
                 
                 const mappedProduct = {
                     ...discountedProduct,
-                    mainImage: (data.photos && data.photos.length > 0) ? data.photos[0] : (data.mainImage || 'https://via.placeholder.com/600?text=No+Image'),
-                    thumbnails: (data.photos && data.photos.length > 0) ? data.photos : (data.mainImage ? [data.mainImage] : ['https://via.placeholder.com/600?text=No+Image']),
+                    mainImage: (data.photos && data.photos.length > 0) ? data.photos[0] : (data.mainImage || PLACEHOLDER_IMG),
+                    thumbnails: (data.photos && data.photos.length > 0) ? data.photos : (data.mainImage ? [data.mainImage] : [PLACEHOLDER_IMG]),
                     brand: data.brand || 'Visionkart',
                     title: data.name || data.model || 'Product Details',
                     price: discountedProduct.displayPrice,
@@ -285,7 +286,7 @@ const ProductDetails = () => {
                 const similarMapped = discountedSimilar.map(p => {
                     return {
                         id: p.id,
-                        img: (p.photos && p.photos.length > 0) ? p.photos[0] : (p.mainImage || 'https://via.placeholder.com/400?text=No+Image'),
+                        img: (p.photos && p.photos.length > 0) ? p.photos[0] : (p.mainImage || PLACEHOLDER_IMG),
                         hoverImg: (p.photos && p.photos.length > 1) ? p.photos[1] : null,
                         title: p.name || p.title || p.productName || p.brand || "Visionkart",
                         rating: rateimg,
@@ -494,7 +495,19 @@ const ProductDetails = () => {
 
 
     if (loading) return <Loader fullPage={true} />;
-    if (!product) return <div style={{padding: '100px', textAlign: 'center', fontSize: '20px'}}>Product not found</div>;
+    if (!product) return (
+        <div style={{ padding: '100px 20px', textAlign: 'center', fontSize: '20px' }}>
+            {/* Reached both when the product doesn't exist and when the fetch
+                failed (e.g. offline) — the copy covers both honestly. */}
+            <p>We couldn't load this product — it may have been removed, or there may be a connection problem.</p>
+            <button
+                onClick={() => window.location.reload()}
+                style={{ marginTop: '16px', padding: '10px 24px', borderRadius: '8px', border: '1px solid #00387d', background: '#00387d', color: '#fff', cursor: 'pointer', fontSize: '16px' }}
+            >
+                Try again
+            </button>
+        </div>
+    );
 
     // A product is purchasable only when the admin hasn't flagged it
     // Discontinued / Out of Stock AND it has stock — via the shared helper that
@@ -504,7 +517,31 @@ const ProductDetails = () => {
 
     const getCategoryDescription = () => {
         if (!product || !product.category) return null;
-        if (product.category === 'Contact Lenses' && String(product.contactLensSubcategory || '').trim().toLowerCase() === 'solutions') {
+        // Solutions get a lens-care description. The brand-specific Biotrue
+        // copy only renders for actual Bausch + Lomb products — showing it on
+        // every solution mislabelled other brands' products.
+        const isSolutions = product.category === 'Contact Lenses'
+            && /solution/i.test(String(product.contactLensSubcategory || ''));
+        const isBiotrue = /biotrue|bausch/i.test(`${product.name || ''} ${product.brand || ''}`);
+        if (isSolutions && !isBiotrue) {
+            return {
+                title: 'Contact Lens Solution',
+                description: 'An all-in-one solution that cleans, disinfects, rinses, conditions, and stores soft contact lenses. It helps keep lenses clean, fresh, and comfortable throughout the day.',
+                highlights: [
+                    {
+                        title: 'Highlights',
+                        items: [
+                            'Cleans and disinfects contact lenses',
+                            'Removes dirt and protein deposits',
+                            'Keeps lenses moist and comfortable',
+                            'All-in-one solution for daily lens care',
+                            'Helps provide clear and comfortable vision',
+                        ]
+                    }
+                ]
+            };
+        }
+        if (isSolutions && isBiotrue) {
             return {
                 title: 'Bausch + Lomb Biotrue Multi-Purpose Contact Lens Solution',
                 description: 'Bausch + Lomb Biotrue Multi-Purpose Contact Lens Solution is an all-in-one solution that cleans, disinfects, rinses, conditions, and stores soft contact lenses. It helps keep lenses clean, fresh, and comfortable throughout the day.',
