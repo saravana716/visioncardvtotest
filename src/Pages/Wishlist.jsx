@@ -10,6 +10,7 @@ import rateimg from "../assets/star.png";
 import colorimg from "../assets/color.png";
 import './Wishlist.css';
 import Loader from '../Components/Loader/Loader';
+import { hasTryOnImage } from '../utils/tryOnModel';
 
 const Wishlist = () => {
     const { wishlistItems, user } = useWishlist();
@@ -54,7 +55,9 @@ const Wishlist = () => {
         color: colorimg,
         ratingcount: p.ratingCount || "0",
         colorcount: p.colors ? p.colors.length : "1",
-        tryOn: p.category === 'Spectacles' || p.category === 'Sunglasses'
+        // Badge only when the try-on genuinely works for this product —
+        // i.e. the admin uploaded a dedicated cutout.
+        tryOn: (p.category === 'Spectacles' || p.category === 'Sunglasses') && hasTryOnImage(p)
     }));
 
     if (!user) {

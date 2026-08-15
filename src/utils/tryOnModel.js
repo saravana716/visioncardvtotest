@@ -24,21 +24,22 @@ export function getTryOnGlbUrl(product) {
 /**
  * Resolve the 2D image to overlay for the photo/live try-on.
  *
- * Prefers a dedicated front-facing transparent-PNG cutout (`tryOnImageUrl`,
- * uploaded in the admin), which gives a clean overlay. Falls back to the first
- * catalog photo when none is set — the runtime white-background removal in the
- * photo try-on makes a white-background product shot usable, just not as good.
+ * Only the dedicated front-facing transparent-PNG cutout (`tryOnImageUrl`,
+ * uploaded in the admin) is ever used — a raw catalog photo composited on a
+ * face reads as broken, so products without a cutout get no try-on at all
+ * (every entry point is gated on hasTryOnImage).
  */
 export function getTryOnFrameImage(product) {
-  if (!product) return null
-  if (typeof product.tryOnImageUrl === 'string') {
+  if (typeof product?.tryOnImageUrl === 'string') {
     const url = product.tryOnImageUrl.trim()
     if (url) return url
   }
-  if (Array.isArray(product.photos) && product.photos.length > 0) {
-    return product.photos[0]
-  }
-  return product.mainImage || null
+  return null
+}
+
+/** True only when the admin uploaded a dedicated try-on cutout. */
+export function hasTryOnImage(product) {
+  return getTryOnFrameImage(product) !== null
 }
 
 /** True when the product category makes sense to try on the face. */

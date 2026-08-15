@@ -6,7 +6,7 @@ import PropCard from '../Components/PropCard/PropCard';
 import VTOCanvas from '../Components/VTO/VTOCanvas';
 import PhotoTryOn from '../Components/VTO/PhotoTryOn';
 import { getProducts, getProductById, getCategoryDiscounts, applyCategoryDiscounts } from '../services/firestoreService';
-import { getTryOnFrameImage } from '../utils/tryOnModel';
+import { getTryOnFrameImage, hasTryOnImage } from '../utils/tryOnModel';
 import { config } from '../config';
 import rateimg from '../assets/star.png';
 import colorimg from '../assets/color.png';
@@ -39,14 +39,16 @@ const VirtualTryOn = () => {
                     getCategoryDiscounts(),
                 ]);
                 const priced = applyCategoryDiscounts(data, categoryDiscounts);
-                const mappedData = priced.slice(0, 10).map(p => ({
+                // Only frames with a dedicated try-on cutout are offered — a raw
+                // catalog photo composited on a face reads as broken.
+                const withCutout = priced.filter(hasTryOnImage);
+                const mappedData = withCutout.slice(0, 10).map(p => ({
                     id: p.id,
                     title: p.name || p.title || p.productName || p.brand || "Visionkart",
                     price: p.displayPrice,
                     mrpprice: p.discountLabel ? p.originalPrice : null,
                     discount: p.discountLabel,
                     img: (p.photos && p.photos.length > 0) ? p.photos[0] : (p.mainImage || PLACEHOLDER_IMG),
-                    // Dedicated transparent cutout when available, else the photo.
                     tryOnImg: getTryOnFrameImage(p),
                     rating: rateimg,
                     color: colorimg,
@@ -56,25 +58,34 @@ const VirtualTryOn = () => {
                 }));
                 setProducts(mappedData);
 
+                const selectDefault = () => {
+                    if (withCutout.length > 0) {
+                        setSelectedProduct({
+                            ...withCutout[0],
+                            price: withCutout[0].displayPrice,
+                            vtoImg: getTryOnFrameImage(withCutout[0])
+                        });
+                    }
+                };
+
                 // Handle initial selected product (discounted, so the panel price
-                // matches the card and the product page).
+                // matches the card and the product page). A deep-linked product
+                // without a cutout can't be tried on — select a frame that can.
                 if (pid) {
                     const product = await getProductById(pid);
-                    if (product) {
-                        const [pp] = applyCategoryDiscounts([product], categoryDiscounts);
+                    const pp = product ? applyCategoryDiscounts([product], categoryDiscounts)[0] : null;
+                    if (pp && hasTryOnImage(pp)) {
                         setSelectedProduct({
                             ...pp,
                             price: pp.displayPrice,
-                            vtoImg: getTryOnFrameImage(pp) || ((pp.photos && pp.photos.length > 0) ? pp.photos[0] : (pp.mainImage || PLACEHOLDER_IMG))
+                            vtoImg: getTryOnFrameImage(pp)
                         });
                         setVtoActive(true);
+                    } else {
+                        selectDefault();
                     }
-                } else if (priced.length > 0) {
-                    setSelectedProduct({
-                        ...priced[0],
-                        price: priced[0].displayPrice,
-                        vtoImg: getTryOnFrameImage(priced[0])
-                    });
+                } else {
+                    selectDefault();
                 }
             } catch (error) {
                 console.error("Error fetching VTO data:", error);
@@ -89,7 +100,8 @@ const VirtualTryOn = () => {
     const handleSelectProduct = (product) => {
         setSelectedProduct({
             ...product,
-            vtoImg: product.tryOnImg || product.img
+            // The grid only lists cutout-bearing frames, so tryOnImg is set.
+            vtoImg: product.tryOnImg
         });
         setVtoActive(true);
         setUploadedImage(null); // Reset uploaded image when selecting a new product
@@ -117,14 +129,17 @@ const VirtualTryOn = () => {
                     <div className="tryon-visual-section">
                         {!config.enable3DTryOn ? (
                             // Phase 1: photo try-on only — the hero launches the 2D modal.
+                            // No launch button when no frame with a cutout is selected.
                             <div className="tryon-placeholder-card">
                                 <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800" alt="Model" className="model-base" />
-                                <div className="overlay-content">
-                                    <div className="pulse-button" onClick={() => setPhotoTryOnOpen(true)}>
-                                        <MdImage />
-                                        <span>Start Photo Try-On</span>
+                                {selectedProduct?.vtoImg && (
+                                    <div className="overlay-content">
+                                        <div className="pulse-button" onClick={() => setPhotoTryOnOpen(true)}>
+                                            <MdImage />
+                                            <span>Start Photo Try-On</span>
+                                        </div>
                                     </div>
-                                </div>
+                                )}
                             </div>
                         ) : !vtoActive ? (
                             <div className="tryon-placeholder-card">

@@ -503,6 +503,13 @@ const Checkout = () => {
 
             const data = await response.json();
 
+            // The customer may have navigated away during a slow (cold-start)
+            // response — never yank them to the gateway from a dead page.
+            if (!isMountedRef.current) {
+                await deleteOrderById(firestoreOrderId, user.uid).catch(() => {});
+                return;
+            }
+
             // Create a hidden form and submit it to CCAvenue. Keep a ref so
             // an unmount or back-navigation can remove the orphaned node.
             const mapForm = document.createElement("form");

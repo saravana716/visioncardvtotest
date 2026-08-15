@@ -40,7 +40,7 @@ const LensSelectionModal = ({
     const contactLensPacks = (product && product.category === 'Contact Lenses')
         ? (isSolution
             ? (Array.isArray(product.contactLensVariants) && product.contactLensVariants.length > 0
-                ? product.contactLensVariants.map((v, idx) => {
+                ? product.contactLensVariants.filter(Boolean).map((v, idx) => {
                     const basePriceInt = parsePriceToInt(product.price);
                     const offerPriceInt = product.offerPrice ? parsePriceToInt(product.offerPrice) : null;
                     const vPrice = parseInt(v.price || 0);
@@ -82,7 +82,7 @@ const LensSelectionModal = ({
                   })()
               )
             : (Array.isArray(product.contactLensPacks) && product.contactLensPacks.length > 0
-                ? product.contactLensPacks.map((pkg, idx) => {
+                ? product.contactLensPacks.filter(Boolean).map((pkg, idx) => {
                     const basePriceInt = parsePriceToInt(product.price);
                     const offerPriceInt = product.offerPrice ? parsePriceToInt(product.offerPrice) : null;
                     const pkgPrice = parseInt(pkg.price || 0);

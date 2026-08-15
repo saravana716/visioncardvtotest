@@ -24,7 +24,7 @@ import { parsePriceToInt } from '../utils/price';
 import { isProductUnavailable, resolveStock } from '../utils/availability';
 import { lookupPincode, getSavedLocation, saveLocation } from '../utils/pincode';
 import { VtoModal } from '@vto/sdk';
-import { getTryOnGlbUrl, getTryOnFrameImage, isTryOnEligible } from '../utils/tryOnModel';
+import { getTryOnGlbUrl, getTryOnFrameImage, hasTryOnImage, isTryOnEligible } from '../utils/tryOnModel';
 import { config } from '../config';
 import { PLACEHOLDER_IMG } from '../utils/placeholderImage';
 // Lazy so the MediaPipe/photo-try-on bundle only downloads when a shopper
@@ -732,17 +732,21 @@ const ProductDetails = () => {
                                 )}
 
                                 {/* 2D photo try-on — overlays the frame on a selfie or a
-                                    gallery photo (no camera permission needed in gallery mode). */}
-                                <div className="virtual-tryon-banner-premium" onClick={() => setIsPhotoTryOnOpen(true)}>
-                                    <div className="tryon-content">
-                                        <span className="tryon-badge">TRY-ON</span>
-                                        <h3>Virtual Try-On</h3>
-                                        <p>See them on your face — snap a selfie or pick a photo</p>
+                                    gallery photo (no camera permission needed in gallery mode).
+                                    Hidden unless the admin uploaded a try-on cutout: without
+                                    one there is nothing clean to composite. */}
+                                {hasTryOnImage(product) && (
+                                    <div className="virtual-tryon-banner-premium" onClick={() => setIsPhotoTryOnOpen(true)}>
+                                        <div className="tryon-content">
+                                            <span className="tryon-badge">TRY-ON</span>
+                                            <h3>Virtual Try-On</h3>
+                                            <p>See them on your face — snap a selfie or pick a photo</p>
+                                        </div>
+                                        <div className="tryon-img">
+                                            <img src="https://images.unsplash.com/photo-1574258495973-f010dfbb5371?w=400" alt="Try on" />
+                                        </div>
                                     </div>
-                                    <div className="tryon-img">
-                                        <img src="https://images.unsplash.com/photo-1574258495973-f010dfbb5371?w=400" alt="Try on" />
-                                    </div>
-                                </div>
+                                )}
                             </>
                         )}
 
@@ -757,8 +761,9 @@ const ProductDetails = () => {
                         )}
 
                         {/* 2D photo try-on modal — uses the uploaded transparent frame
-                            cutout (falls back to the product photo). Mounted only once
-                            opened so its lazy chunk downloads on demand. */}
+                            cutout (the banner that opens it only renders when one
+                            exists). Mounted only once opened so its lazy chunk
+                            downloads on demand. */}
                         {isPhotoTryOnOpen && (
                             <Suspense fallback={null}>
                                 <PhotoTryOn
