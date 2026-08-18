@@ -26,17 +26,38 @@ const MODEL_URL =
 
 // Frame width as a multiple of the measured pupillary distance. This is applied
 // to the *tight* frame bounding box (white margins removed), so it maps the real
-// glasses width — not the padded photo — onto the face. ~2x PD ≈ face width.
-const FRAME_WIDTH_TO_PD = 2.0;
+// glasses width — not the padded photo — onto the face. Real frames overhang
+// the eye area to roughly the face edges, and pure 2×PD measured slightly
+// narrow against reference photos of the same frame worn for real.
+const FRAME_WIDTH_TO_PD = 2.1;
 // Pixels at/above this min-channel brightness are treated as white background
 // and made transparent; a short feather band below it softens the cut edge.
 const WHITE_CUTOFF = 232;
 const WHITE_FEATHER = 16;
 // Nudge the frame vertically from the eye line, in multiples of the PD
-// (negative = up). Placement anchors the frame's LENS LINE to the pupils
-// (see prepareFrame's lensFrac), so no static offset is needed; the user can
-// fine-tune with the on-screen controls.
-const FRAME_VERTICAL_OFFSET_TO_PD = 0;
+// (positive = down). Placement anchors the frame's LENS LINE to the pupils
+// (see prepareFrame's lensFrac); worn glasses actually sit with the pupils
+// slightly ABOVE the lens centre, so a small downward bias matches reality.
+const FRAME_VERTICAL_OFFSET_TO_PD = 0.025;
+
+// --- Realism pass (enhanceFrame) tuning ---
+// Opaque pixels are classified by their depth from the nearest transparent
+// pixel: within RIM_GUARD (fraction of frame width) they are rim/temple and
+// stay fully opaque; beyond LENS_CORE they are lens glass. In between, the
+// effects blend in smoothly.
+const RIM_GUARD_FRAC = 0.02;
+const LENS_CORE_FRAC = 0.05;
+// A tinted lens transmits some light: lens-glass alpha is scaled toward this
+// darkness-dependent floor (darker tint → more opaque, like real sunglasses).
+const LENS_ALPHA_DARKEST = 0.86;
+const LENS_ALPHA_LIGHTEST = 0.64;
+// Deep-interior area must exceed this fraction of the frame box to count as a
+// tinted lens at all — thick acetate rims alone don't qualify, and cutouts
+// whose (clear) lenses were keyed transparent skip the pass entirely.
+const LENS_MIN_AREA_FRAC = 0.06;
+// Contact-shadow strength and its downward offset as a fraction of frame height.
+const SHADOW_ALPHA = 0.2;
+const SHADOW_OFFSET_FRAC = 0.045;
 
 // MediaPipe iris landmark indices (478-point model); fall back to the outer eye
 // corners if iris points are unavailable.
@@ -185,6 +206,190 @@ function prepareFrame(frameImg) {
     return { canvas: c, sx: minX, sy: minY, sw: bw, sh: bh, lensFrac };
 }
 
+/**
+ * Distance (in px, capped) from each pixel to the nearest pixel that is not
+ * solidly opaque (alpha < 200 — so feathered edges count as boundary) — a
+ * two-pass chamfer transform over the alpha channel. Lens interiors score
+ * high; thin rims, temples and silhouette edges score low. This is how the
+ * realism pass tells "glass" from "frame" without any color segmentation,
+ * which would be hopeless for a dark lens inside a dark rim.
+ */
+function alphaDepthMap(px, w, h) {
+    const INF = 0xffff;
+    const d = new Uint16Array(w * h);
+    for (let i = 0, p = 3; i < d.length; i++, p += 4) {
+        d[i] = px[p] >= 200 ? INF : 0;
+    }
+    // Forward pass (left/top neighbours), then backward (right/bottom).
+    for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+            const i = y * w + x;
+            if (d[i] === 0) continue;
+            let v = d[i];
+            if (x > 0 && d[i - 1] + 1 < v) v = d[i - 1] + 1;
+            if (y > 0 && d[i - w] + 1 < v) v = d[i - w] + 1;
+            d[i] = v;
+        }
+    }
+    for (let y = h - 1; y >= 0; y--) {
+        for (let x = w - 1; x >= 0; x--) {
+            const i = y * w + x;
+            if (d[i] === 0) continue;
+            let v = d[i];
+            if (x < w - 1 && d[i + 1] + 1 < v) v = d[i + 1] + 1;
+            if (y < h - 1 && d[i + w] + 1 < v) v = d[i + w] + 1;
+            d[i] = v;
+        }
+    }
+    return d;
+}
+
+/**
+ * Sample the shopper's photo below the eyes (two cheek patches) to estimate
+ * the scene's brightness and warmth, so the frame layer can be lit to match.
+ * Photos come from the camera or a local file (data URLs), so the canvas is
+ * never tainted here — but fail soft anyway.
+ */
+function samplePhotoLighting(photo, lx, ly, rx, ry, pd) {
+    try {
+        const c = document.createElement('canvas');
+        c.width = 16;
+        c.height = 16;
+        const cx = c.getContext('2d', { willReadFrequently: true });
+        let r = 0, g = 0, b = 0, n = 0;
+        const rad = Math.max(4, pd * 0.16);
+        for (const [ex, ey] of [[lx, ly], [rx, ry]]) {
+            cx.clearRect(0, 0, 16, 16);
+            cx.drawImage(photo, ex - rad, ey + pd * 0.3, rad * 2, rad * 2, 0, 0, 16, 16);
+            const p = cx.getImageData(0, 0, 16, 16).data;
+            for (let i = 0; i < p.length; i += 4) {
+                r += p[i]; g += p[i + 1]; b += p[i + 2]; n++;
+            }
+        }
+        if (!n) return null;
+        r /= n; g /= n; b /= n;
+        return { r, g, b, luma: 0.299 * r + 0.587 * g + 0.114 * b };
+    } catch {
+        return null;
+    }
+}
+
+/**
+ * Realism pass over the prepared cutout — this is what stops the overlay
+ * reading as a flat sticker:
+ *  1. Lens transparency: deep-interior "glass" pixels get partial alpha so
+ *     skin and eyes ghost through, scaled by how dark the tint is.
+ *  2. Specular streaks: two soft diagonal highlight bands on the glass only,
+ *     mimicking reflected shop/window light.
+ *  3. Lighting match: the whole frame is brightness/warmth-shifted toward the
+ *     scene sampled from the shopper's cheeks.
+ * Mutates the prepared canvas in place and returns a blurred black silhouette
+ * canvas for the contact shadow (or null when pixels are unreadable).
+ */
+function enhanceFrame(prepared, scene) {
+    const { canvas, sx, sy, sw, sh } = prepared;
+    const cx = canvas.getContext('2d', { willReadFrequently: true });
+    let data;
+    try {
+        data = cx.getImageData(0, 0, canvas.width, canvas.height);
+    } catch {
+        return null;
+    }
+    const px = data.data;
+    const w = canvas.width;
+    const h = canvas.height;
+
+    // A real cutout always has transparent surroundings. If essentially
+    // nothing is transparent, this is not a cutout — e.g. a legacy raw photo
+    // stored before the admin upload pipeline existed, on a background the
+    // white-keying didn't catch. The depth map would then read the WHOLE
+    // rectangle as lens glass and tint/streak the entire photo, so leave such
+    // images exactly as they are (no lighting, no shadow either).
+    let clear = 0;
+    for (let p = 3; p < px.length; p += 4) {
+        if (px[p] === 0) clear++;
+    }
+    if (clear < w * h * 0.01) return null;
+
+    const depth = alphaDepthMap(px, w, h);
+    const rimPx = Math.max(2, sw * RIM_GUARD_FRAC);
+    const lensPx = Math.max(rimPx + 2, sw * LENS_CORE_FRAC);
+
+    // How dark is the glass? Averaged over the deep interior only.
+    let lumSum = 0, lumN = 0;
+    for (let i = 0, p = 0; i < depth.length; i++, p += 4) {
+        if (depth[i] >= lensPx && px[p + 3] >= 200) {
+            lumSum += 0.299 * px[p] + 0.587 * px[p + 1] + 0.114 * px[p + 2];
+            lumN++;
+        }
+    }
+    const hasLens = lumN >= sw * sh * LENS_MIN_AREA_FRAC;
+    const tintLuma = lumN ? lumSum / lumN : 0;
+    const lensAlphaFloor = Math.min(
+        LENS_ALPHA_DARKEST,
+        Math.max(LENS_ALPHA_LIGHTEST, LENS_ALPHA_DARKEST - 0.28 * (tintLuma / 255))
+    );
+
+    // Scene lighting adaptation factors (identity when sampling failed).
+    const bright = scene ? Math.min(1.08, Math.max(0.86, (scene.luma + 60) / 195)) : 1;
+    const warm = scene ? Math.min(0.06, Math.max(-0.06, (scene.r - scene.b) / 400)) : 0;
+    const rFac = bright * (1 + warm);
+    const gFac = bright;
+    const bFac = bright * (1 - warm);
+
+    for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+            const i = y * w + x;
+            const p = i * 4;
+            if (px[p + 3] === 0) continue;
+
+            // Lighting match applies to every visible pixel.
+            if (scene) {
+                px[p] = Math.min(255, px[p] * rFac);
+                px[p + 1] = Math.min(255, px[p + 1] * gFac);
+                px[p + 2] = Math.min(255, px[p + 2] * bFac);
+            }
+
+            if (!hasLens) continue;
+            let t = (depth[i] - rimPx) / (lensPx - rimPx);
+            if (t <= 0) continue;
+            if (t > 1) t = 1;
+            t = t * t * (3 - 2 * t); // smoothstep
+
+            // 1. transparency toward the tint's floor
+            px[p + 3] = Math.round(px[p + 3] * (1 - t * (1 - lensAlphaFloor)));
+
+            // 2. specular streaks along the photo diagonal
+            const u = (x - sx) / sw + (y - sy) / sh;
+            const s =
+                t * 255 *
+                (0.11 * Math.exp(-((u - 0.62) * (u - 0.62)) / 0.008) +
+                 0.05 * Math.exp(-((u - 0.3) * (u - 0.3)) / 0.004));
+            if (s >= 1) {
+                px[p] = Math.min(255, px[p] + s);
+                px[p + 1] = Math.min(255, px[p + 1] + s);
+                px[p + 2] = Math.min(255, px[p + 2] + s);
+            }
+        }
+    }
+    cx.putImageData(data, 0, 0);
+
+    // Blurred black silhouette for the contact shadow. ctx.filter is ignored
+    // by a few older engines — the shadow just renders sharper there, and it's
+    // drawn at low alpha either way.
+    const sil = document.createElement('canvas');
+    sil.width = w;
+    sil.height = h;
+    const sctx = sil.getContext('2d');
+    sctx.filter = `blur(${Math.max(2, Math.round(sw * 0.012))}px)`;
+    sctx.drawImage(canvas, 0, 0);
+    sctx.filter = 'none';
+    sctx.globalCompositeOperation = 'source-in';
+    sctx.fillStyle = '#141008';
+    sctx.fillRect(0, 0, w, h);
+    return sil;
+}
+
 function loadImage(src, crossOrigin) {
     return new Promise((resolve, reject) => {
         const img = new Image();
@@ -258,13 +463,22 @@ async function composeTryOn(photoSrc, frameSrc) {
     }
     const prepared = prepareFrame(frameImg);
 
+    // Realism pass — lens transparency, specular streaks, scene lighting match
+    // and the contact-shadow silhouette. Only possible when the frame's pixels
+    // are readable; the tainted fallback renders the plain overlay as before.
+    let shadow = null;
+    if (prepared) {
+        const scene = samplePhotoLighting(photo, lx, ly, rx, ry, pd);
+        shadow = enhanceFrame(prepared, scene);
+    }
+
     const srcW = prepared ? prepared.sw : frameImg.naturalWidth;
     const srcH = prepared ? prepared.sh : frameImg.naturalHeight;
     const frameW = pd * FRAME_WIDTH_TO_PD;
     const frameH = frameW * (srcH / srcW || 0.4);
 
     const frame = prepared
-        ? { canvas: prepared.canvas, sx: prepared.sx, sy: prepared.sy, sw: prepared.sw, sh: prepared.sh }
+        ? { canvas: prepared.canvas, shadow, sx: prepared.sx, sy: prepared.sy, sw: prepared.sw, sh: prepared.sh }
         : { img: frameImg };
 
     const place = {
@@ -320,6 +534,17 @@ function renderComposite({ photo, frame, place }, adjust) {
     ctx.translate(adjust.hFrac * pd, adjust.vFrac * pd);
     // Anchor the frame's lens line (not its box centre) on the eye line.
     if (frame.canvas) {
+        // Soft contact shadow first, nudged down along the face axes, so the
+        // glasses sit ON the skin instead of floating over it.
+        if (frame.shadow) {
+            ctx.globalAlpha = SHADOW_ALPHA;
+            ctx.drawImage(
+                frame.shadow,
+                frame.sx, frame.sy, frame.sw, frame.sh,
+                -dw / 2, -dh * lensFrac + dh * SHADOW_OFFSET_FRAC, dw, dh
+            );
+            ctx.globalAlpha = 1;
+        }
         ctx.drawImage(frame.canvas, frame.sx, frame.sy, frame.sw, frame.sh, -dw / 2, -dh * lensFrac, dw, dh);
     } else {
         ctx.drawImage(frame.img, -dw / 2, -dh * lensFrac, dw, dh);
