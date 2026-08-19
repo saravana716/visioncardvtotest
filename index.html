@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/src/assets/logo.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VisionKart - Online Shopping Platform | Best Deals</title>
+    <meta name="description" content=" Shop the best products on VisionKart. Fast delivery, secure checkout, and amazing offers.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Great+Vibes&family=Jost:ital,wght@0,100..900;1,100..900&family=Lexend:wght@100..900&family=Limelight&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Quicksand:wght@300..700&family=Sacramento&family=Satisfy&family=Uncial+Antiqua&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+    <script>
+      // Global Scroll Reveal Logic
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, observerOptions);
+
+      // Observe existing and future elements
+      const observeElements = () => {
+        document.querySelectorAll('.scroll-reveal').forEach(el => observer.observe(el));
+      };
+
+      // Initial check
+      observeElements();
+      
+      // Re-observe on DOM changes (for SPA navigation)
+      const domObserver = new MutationObserver(() => {
+        observeElements();
+      });
+      domObserver.observe(document.body, { childList: true, subtree: true });
+    </script>
+  </body>
+</html>

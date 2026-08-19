@@ -47,10 +47,20 @@ const FRAME_VERTICAL_OFFSET_TO_PD = 0.025;
 // effects blend in smoothly.
 const RIM_GUARD_FRAC = 0.02;
 const LENS_CORE_FRAC = 0.05;
-// A tinted lens transmits some light: lens-glass alpha is scaled toward this
-// darkness-dependent floor (darker tint → more opaque, like real sunglasses).
-const LENS_ALPHA_DARKEST = 0.86;
-const LENS_ALPHA_LIGHTEST = 0.64;
+// Lens rendering follows the product spec's opacity bands — clear 5–15%,
+// light tint 25–40%, brown 35–55%, dark 50–70%, polarized 55–75% — via a
+// continuous curve on the measured tint luminance L (0–255):
+//   bodyAlpha = clamp(LENS_ALPHA_MAX − LENS_ALPHA_SLOPE·L/255, MIN, MAX)
+// The lens is drawn in TWO layers: a multiply-blend tint (real glass filters
+// the light coming through, keeping the color rich) plus the lens body at
+// this alpha. The combination lands each tint family in its spec band while
+// eyes stay naturally visible — verified by the harness's measured
+// transmission per swatch.
+const LENS_ALPHA_MAX = 0.68;
+const LENS_ALPHA_SLOPE = 0.58;
+const LENS_ALPHA_MIN = 0.12;
+// Strength of the multiply tint layer (scaled by the same glass mask).
+const TINT_FILTER_STRENGTH = 0.4;
 // Deep-interior area must exceed this fraction of the frame box to count as a
 // tinted lens at all — thick acetate rims alone don't qualify, and cutouts
 // whose (clear) lenses were keyed transparent skip the pass entirely.
@@ -206,6 +216,19 @@ function prepareFrame(frameImg) {
     return { canvas: c, sx: minX, sy: minY, sw: bw, sh: bh, lensFrac };
 }
 
+let multiplySupport = null;
+/** Whether canvas 2D supports the 'multiply' blend mode (memoized). */
+function supportsMultiply() {
+    if (multiplySupport === null) {
+        const c = document.createElement('canvas');
+        c.width = c.height = 1;
+        const cx = c.getContext('2d');
+        cx.globalCompositeOperation = 'multiply';
+        multiplySupport = cx.globalCompositeOperation === 'multiply';
+    }
+    return multiplySupport;
+}
+
 /**
  * Distance (in px, capped) from each pixel to the nearest pixel that is not
  * solidly opaque (alpha < 200 — so feathered edges count as boundary) — a
@@ -283,8 +306,10 @@ function samplePhotoLighting(photo, lx, ly, rx, ry, pd) {
  *     mimicking reflected shop/window light.
  *  3. Lighting match: the whole frame is brightness/warmth-shifted toward the
  *     scene sampled from the shopper's cheeks.
- * Mutates the prepared canvas in place and returns a blurred black silhouette
- * canvas for the contact shadow (or null when pixels are unreadable).
+ * Mutates the prepared canvas in place and returns { shadow, tint }: a blurred
+ * black silhouette canvas for the contact shadow and the multiply-blend lens
+ * tint layer (tint is null for lens-less frames). Returns null when pixels are
+ * unreadable or the image is not a cutout.
  */
 function enhanceFrame(prepared, scene) {
     const { canvas, sx, sy, sw, sh } = prepared;
@@ -325,10 +350,20 @@ function enhanceFrame(prepared, scene) {
     }
     const hasLens = lumN >= sw * sh * LENS_MIN_AREA_FRAC;
     const tintLuma = lumN ? lumSum / lumN : 0;
+    // Spec-band curve: darkest tints ~0.68 body alpha, near-clear ~0.12.
     const lensAlphaFloor = Math.min(
-        LENS_ALPHA_DARKEST,
-        Math.max(LENS_ALPHA_LIGHTEST, LENS_ALPHA_DARKEST - 0.28 * (tintLuma / 255))
+        LENS_ALPHA_MAX,
+        Math.max(LENS_ALPHA_MIN, LENS_ALPHA_MAX - LENS_ALPHA_SLOPE * (tintLuma / 255))
     );
+
+    // Multiply-blend tint layer: the lens color at glass-mask strength. Drawn
+    // under the body layer with globalCompositeOperation 'multiply', it
+    // darkens/colors the skin and eyes the way real glass filters light —
+    // which is what lets the body alpha drop into the spec bands without the
+    // tint washing out toward skin tone. Not built at all on the rare engine
+    // without 'multiply' support — renderComposite couldn't draw it anyway.
+    const tintData = hasLens && supportsMultiply() ? new ImageData(w, h) : null;
+    const tp = tintData ? tintData.data : null;
 
     // Scene lighting adaptation factors (identity when sampling failed).
     const bright = scene ? Math.min(1.08, Math.max(0.86, (scene.luma + 60) / 195)) : 1;
@@ -356,15 +391,24 @@ function enhanceFrame(prepared, scene) {
             if (t > 1) t = 1;
             t = t * t * (3 - 2 * t); // smoothstep
 
-            // 1. transparency toward the tint's floor
+            // 1a. tint layer pixel: the (lighting-adjusted) lens color, at
+            // multiply strength scaled by the glass mask.
+            if (tp) {
+                tp[p] = px[p];
+                tp[p + 1] = px[p + 1];
+                tp[p + 2] = px[p + 2];
+                tp[p + 3] = Math.round(255 * t * TINT_FILTER_STRENGTH * (px[p + 3] / 255));
+            }
+
+            // 1b. body transparency toward the tint's spec-band floor
             px[p + 3] = Math.round(px[p + 3] * (1 - t * (1 - lensAlphaFloor)));
 
-            // 2. specular streaks along the photo diagonal
+            // 2. specular streaks along the photo diagonal (spec: 10–20%)
             const u = (x - sx) / sw + (y - sy) / sh;
             const s =
                 t * 255 *
-                (0.11 * Math.exp(-((u - 0.62) * (u - 0.62)) / 0.008) +
-                 0.05 * Math.exp(-((u - 0.3) * (u - 0.3)) / 0.004));
+                (0.16 * Math.exp(-((u - 0.62) * (u - 0.62)) / 0.008) +
+                 0.07 * Math.exp(-((u - 0.3) * (u - 0.3)) / 0.004));
             if (s >= 1) {
                 px[p] = Math.min(255, px[p] + s);
                 px[p + 1] = Math.min(255, px[p + 1] + s);
@@ -387,7 +431,15 @@ function enhanceFrame(prepared, scene) {
     sctx.globalCompositeOperation = 'source-in';
     sctx.fillStyle = '#141008';
     sctx.fillRect(0, 0, w, h);
-    return sil;
+
+    let tint = null;
+    if (tintData) {
+        tint = document.createElement('canvas');
+        tint.width = w;
+        tint.height = h;
+        tint.getContext('2d').putImageData(tintData, 0, 0);
+    }
+    return { shadow: sil, tint };
 }
 
 function loadImage(src, crossOrigin) {
@@ -463,13 +515,15 @@ async function composeTryOn(photoSrc, frameSrc) {
     }
     const prepared = prepareFrame(frameImg);
 
-    // Realism pass — lens transparency, specular streaks, scene lighting match
-    // and the contact-shadow silhouette. Only possible when the frame's pixels
-    // are readable; the tainted fallback renders the plain overlay as before.
-    let shadow = null;
+    // Realism pass — lens transparency + multiply tint, specular streaks,
+    // scene lighting match and the contact-shadow silhouette. Skipped (null)
+    // when the frame's pixels aren't readable OR the image isn't a real
+    // cutout (enhanceFrame's no-transparency guard); both fall back to the
+    // plain overlay as before.
+    let fx = null;
     if (prepared) {
         const scene = samplePhotoLighting(photo, lx, ly, rx, ry, pd);
-        shadow = enhanceFrame(prepared, scene);
+        fx = enhanceFrame(prepared, scene);
     }
 
     const srcW = prepared ? prepared.sw : frameImg.naturalWidth;
@@ -478,7 +532,12 @@ async function composeTryOn(photoSrc, frameSrc) {
     const frameH = frameW * (srcH / srcW || 0.4);
 
     const frame = prepared
-        ? { canvas: prepared.canvas, shadow, sx: prepared.sx, sy: prepared.sy, sw: prepared.sw, sh: prepared.sh }
+        ? {
+            canvas: prepared.canvas,
+            shadow: fx ? fx.shadow : null,
+            tint: fx ? fx.tint : null,
+            sx: prepared.sx, sy: prepared.sy, sw: prepared.sw, sh: prepared.sh,
+        }
         : { img: frameImg };
 
     const place = {
@@ -544,6 +603,16 @@ function renderComposite({ photo, frame, place }, adjust) {
                 -dw / 2, -dh * lensFrac + dh * SHADOW_OFFSET_FRAC, dw, dh
             );
             ctx.globalAlpha = 1;
+        }
+        // Multiply tint under the body: real glass filters the light coming
+        // through it, so skin and eyes show darkened + colored rather than
+        // alpha-washed. Skipped silently on engines without 'multiply'.
+        if (frame.tint) {
+            ctx.globalCompositeOperation = 'multiply';
+            if (ctx.globalCompositeOperation === 'multiply') {
+                ctx.drawImage(frame.tint, frame.sx, frame.sy, frame.sw, frame.sh, -dw / 2, -dh * lensFrac, dw, dh);
+            }
+            ctx.globalCompositeOperation = 'source-over';
         }
         ctx.drawImage(frame.canvas, frame.sx, frame.sy, frame.sw, frame.sh, -dw / 2, -dh * lensFrac, dw, dh);
     } else {
