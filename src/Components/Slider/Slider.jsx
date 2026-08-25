@@ -40,67 +40,108 @@ const Slider = () => {
     ];
 
     const [currentSlide, setCurrentSlide] = useState(0);
-    const [isAnimating, setIsAnimating] = useState(false);
+    // phase: 'entering' | 'exiting'
+    const [phase, setPhase] = useState('entering');
     const navigate = useNavigate();
 
+    /* ── Auto-advance every 5 s ── */
     useEffect(() => {
         const interval = setInterval(() => {
-            setIsAnimating(true);
-            setTimeout(() => {
-                setCurrentSlide((prev) => (prev + 1) % slides.length);
-                setIsAnimating(false);
-            }, 600);
+            goToNext((currentSlide + 1) % slides.length);
         }, 5000);
         return () => clearInterval(interval);
-    }, [slides.length]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentSlide]);
+
+    const goToNext = (nextIdx) => {
+        setPhase('exiting');
+        setTimeout(() => {
+            setCurrentSlide(nextIdx);
+            setPhase('entering');
+        }, 520);
+    };
+
+    const handleDotClick = (idx) => {
+        if (idx === currentSlide) return;
+        goToNext(idx);
+    };
 
     const slide = slides[currentSlide];
 
+    /* ── Animation class helpers ── */
+    // Heading: bottom-to-top slide
+    const headingClass = phase === 'exiting' ? 'slide-out' : 'slide-in';
+    // Other text: fade only
+    const fadeClass    = phase === 'exiting' ? 'fade-out'  : 'fade-in';
+    // Image: dramatic bottom-to-top rise
+    const imageClass   = phase === 'exiting' ? 'image-slide-out' : 'image-slide-in';
+
     return (
         <div className='slider'>
+            {/* ── Left – text & buttons ── */}
             <div className='sliderleft'>
                 <div className='text-content'>
-                    <span className="slider-pretitle">See the world clearly with visionkart</span>
+
+                    {/* Pre-title — fade */}
+                    <span className={`slider-pretitle ${fadeClass}`}>
+                        See the world clearly with visionkart
+                    </span>
+
+                    {/* Heading — only "See/Look/Feel" slides; "Better" is fixed */}
                     <h1>
-                        <span className={`heading-text ${isAnimating ? 'slide-up-out' : 'slide-up-in'}`}>
+                        <span className={`heading-text ${headingClass}`}>
                             {slide.heading}
-                        </span> 
-                        <span className={`highlight-text ${isAnimating ? 'slide-up-out' : 'slide-up-in'}`}>
+                        </span>
+                        <span className="highlight-text">
                             &nbsp;{slide.highlight}
                         </span>
                     </h1>
-                    <h3 className={isAnimating ? 'fade-out' : 'fade-in'}>{slide.subheading}</h3>
-                    <div className={`para ${isAnimating ? 'fade-out' : 'fade-in'}`}>
+
+                    {/* Sub-heading — fade */}
+                    <h3 className={fadeClass}>
+                        {slide.subheading}
+                    </h3>
+
+                    {/* Description — fade */}
+                    <div className={`para ${fadeClass}`}>
                         <p>{slide.desc1}</p>
                         <p>{slide.desc2}</p>
                     </div>
                 </div>
+
+                {/* Buttons — NO animation, always visible */}
                 <div className='sliderbtn'>
-                    <button className='sliderbtnleft' onClick={() => navigate('/virtual-try-on')}>Try Frames Virtually</button>
-                    <button className='sliderbtnright' onClick={() => navigate('/products')}>Shop Eyewear</button>
+                    <button
+                        className='sliderbtnleft'
+                        onClick={() => navigate('/virtual-try-on')}
+                    >
+                        Try Frames Virtually
+                    </button>
+                    <button
+                        className='sliderbtnright'
+                        onClick={() => navigate('/products')}
+                    >
+                        Shop Eyewear
+                    </button>
                 </div>
             </div>
-            
+
+            {/* ── Right – model image ── */}
             <div className='sliderright'>
-                <div className={`image-container1 ${isAnimating ? 'slide-up-out' : 'slide-up-in'}`}>
+                <div className={`image-container1 ${imageClass}`}>
                     <img src={slide.image} alt="Eyewear Model" />
                 </div>
             </div>
 
+            {/* ── Dot navigation ── */}
             <div className="slider-nav">
                 {slides.map((_, idx) => (
-                    <div 
-                        key={idx} 
+                    <div
+                        key={idx}
                         className={`nav-dot ${currentSlide === idx ? 'active' : ''}`}
-                        onClick={() => {
-                            setIsAnimating(true);
-                            setTimeout(() => {
-                                setCurrentSlide(idx);
-                                setIsAnimating(false);
-                            }, 600);
-                        }}
+                        onClick={() => handleDotClick(idx)}
                     >
-                        {currentSlide === idx && <div className="dot-progress"></div>}
+                        {currentSlide === idx && <div className="dot-progress" />}
                     </div>
                 ))}
             </div>

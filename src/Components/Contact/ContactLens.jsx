@@ -29,7 +29,10 @@ const ContactLens = () => {
     return (
         <div className='contact'>
             <div className='discoverleft'>
-                {/* <button onClick={() => navigate('/products?category=Contact Lenses')}>Shop Now</button> */}
+                <h2 className='contact-title'>Contact Lens &amp; Accessories</h2>
+                <button className='contact-explore-btn' onClick={() => navigate('/products?category=Contact Lenses')}>
+                    Explore More
+                </button>
             </div>
             <div className='discoverright' ref={scrollRef}>
                 {subcategories.map((data, index) => (

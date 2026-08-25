@@ -22,6 +22,8 @@
     gap: 30px;
     z-index: 10;
 }
+
+/* ── Pre-title ─────────────────────────────── */
 .slider-pretitle {
     font-size: clamp(11px, 1.1vw, 14px);
     font-weight: 700;
@@ -47,14 +49,18 @@
     font-weight: 800;
     line-height: 1.1;
     margin: 0;
+    overflow: hidden;   /* clips the bottom-to-top slide so it stays inside */
+    padding-bottom: 4px; /* prevent descender clip */
 }
 
 .heading-text {
-    color: var(--secondary-color) !important; /* PINK as per UI */
+    color: var(--secondary-color) !important; /* PINK */
+    display: inline-block;  /* translateY requires block/inline-block */
 }
 
 .highlight-text {
-    color: var(--primary-color) !important; /* NAVY BLUE as per UI */
+    color: var(--primary-color) !important;   /* NAVY */
+    display: inline-block;
 }
 
 .sliderleft h3 {
@@ -62,6 +68,7 @@
     font-weight: 700;
     color: var(--primary-color);
     margin: 10px 0 0 0;
+    overflow: hidden;
 }
 
 .sliderleft p {
@@ -73,39 +80,50 @@
     margin-top: 5px;
 }
 
+/* ── Buttons – Figma exact match ────────────── */
 .sliderbtn {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 16px;
     margin-top: 5px;
 }
 
-.sliderbtnleft, .sliderbtnright {
-    padding: 12px 28px;
-    border-radius: 10px;
+.sliderbtnleft,
+.sliderbtnright {
+    padding: 13px 30px;
+    border-radius: 6px;
     font-size: clamp(13px, 1vw, 15px);
     font-weight: 700;
     cursor: pointer;
     border: none;
-    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    letter-spacing: 0.4px;
+    transition: transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1),
+                box-shadow 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
+/* Dark navy button – "Try Frames Virtually" */
 .sliderbtnleft {
     background-color: var(--primary-color);
-    color: white;
+    color: #ffffff;
 }
 
+/* Pink/magenta button – "Shop Eyewear" */
 .sliderbtnright {
     background-color: var(--secondary-color);
-    color: white;
+    color: #ffffff;
 }
 
-.sliderbtnleft:hover, .sliderbtnright:hover {
+.sliderbtnleft:hover {
     transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    box-shadow: 0 10px 24px rgba(10, 25, 90, 0.3);
 }
 
-/* THE FIX: Absolute positioning for the model to guarantee she fills the frame */
+.sliderbtnright:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(255, 0, 117, 0.35);
+}
+
+/* ── Right – model image ────────────────────── */
 .sliderright {
     position: absolute;
     top: 0;
@@ -116,6 +134,7 @@
     display: flex;
     align-items: flex-end;
     justify-content: center;
+    overflow: hidden;          /* clip the rising image */
 }
 
 .image-container1 {
@@ -136,28 +155,86 @@
     display: block;
 }
 
-/* Sophisticated Animations */
-.slide-up-in {
-    opacity: 1;
-    transform: translateY(0);
-    transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+/* ════════════════════════════════════════════
+   ANIMATIONS
+   ════════════════════════════════════════════ */
+
+/* ── HEADING: Bottom-to-top slide ─────────── */
+@keyframes slideUpIn {
+    from {
+        opacity: 0;
+        transform: translateY(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.slide-up-out {
-    opacity: 0;
-    transform: translateY(30px);
+@keyframes slideUpOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-80%);
+    }
 }
 
+/* Heading – ENTER (bottom → position) */
+.slide-in {
+    animation: slideUpIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Heading – EXIT (position → top) */
+.slide-out {
+    animation: slideUpOut 0.45s cubic-bezier(0.55, 0, 1, 0.45) both;
+}
+
+/* ── OTHER TEXT: Fade only ────────────────── */
 .fade-in {
     opacity: 1;
-    transition: opacity 0.6s ease;
+    transition: opacity 0.5s ease;
 }
 
 .fade-out {
     opacity: 0;
+    transition: opacity 0.45s ease;
 }
 
-/* Navigation dots */
+/* ── IMAGE: Dramatic bottom rise ──────────── */
+@keyframes slideUpInImage {
+    from {
+        opacity: 0;
+        transform: translateY(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideUpOutImage {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-60px);
+    }
+}
+
+.image-slide-in {
+    animation: slideUpInImage 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.image-slide-out {
+    animation: slideUpOutImage 0.5s cubic-bezier(0.55, 0, 1, 0.45) both;
+}
+
+/* ── Navigation dots ────────────────────────── */
 .slider-nav {
     position: absolute;
     bottom: 40px;
@@ -187,9 +264,10 @@
 
 @keyframes progressFill {
     from { width: 0%; }
-    to { width: 100%; }
+    to   { width: 100%; }
 }
 
+/* ── Responsive ──────────────────────────────── */
 @media (max-width: 1024px) {
     .sliderleft { padding-left: 5%; }
     .sliderleft h1 { font-size: 42px; }
@@ -213,8 +291,9 @@
         position: relative;
         width: 100%;
         height: 300px;
-        order: -1; /* Move image to top on mobile */
+        order: -1;
         margin-bottom: 20px;
+        overflow: hidden;
     }
 
     .image-container1 img {

@@ -1,47 +1,63 @@
 .contact {
     width: 100%;
-    height: 480px;
+    height: 380px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 40px 60px;
     color: white;
-    background: url('../../assets/lens12.webp') no-repeat left center / cover;
+    background: linear-gradient(135deg, #ff69a8 0%, #ff0075 100%);
     gap: 40px;
     box-sizing: border-box;
-    border-radius: 24px;
 }
 
 .contact .discoverleft {
-    flex: 1;
+    flex: 0 0 280px;
     height: 100%;
     display: flex;
-    align-items: flex-end;
-    padding-bottom: 60px;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 16px;
     box-sizing: border-box;
 }
 
-.contact .discoverleft button {
-    padding: 12px 35px;
-    border: none;
+.contact-title {
+    font-size: clamp(22px, 2.2vw, 30px);
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.25;
+    margin: 0;
+}
+
+.contact-desc {
+    font-size: clamp(13px, 1vw, 15px);
+    color: rgba(255, 255, 255, 0.88);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.contact-explore-btn {
+    margin-top: 8px;
+    padding: 11px 28px;
+    border: 2px solid #ffffff;
     border-radius: 8px;
     outline: none;
     font-size: 14px;
     font-weight: 700;
-    color: #ff0075;
-    background: white;
     cursor: pointer;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-    transition: all 0.3s;
+    transition: all 0.3s ease;
 }
 
-.contact .discoverleft button:hover {
+.contact-explore-btn:hover {
+    background: #ffffff;
+    color: #ff0075;
     transform: translateY(-2px);
-    box-shadow: 0 12px 25px rgba(0,0,0,0.2);
-    background: #f8f9fa;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 }
 
 .contact .discoverright {
+    width: 100%;
     flex: 1;
     display: flex;
     align-items: center;
